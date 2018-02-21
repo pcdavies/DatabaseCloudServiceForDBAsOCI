@@ -187,59 +187,89 @@ The following creates a new DBCS Enterprise instance with backup to cloud.  Use 
 	![](images/setup/043.png)
 
 -	Install the yum repository and then adobe and git packages.  Enter the following:
-
 ```
 sudo su -
 cp /tmp/public-yum-ol6.repo /etc/yum.repos.d
 rpm -ivh /tmp/adobe-release-x86_64-1.0-1.noarch.rpm
-yum -y install git
+yum -y install svn
 exit
 ```
-
 ![](images/setup/044.png)
 
--	Log in as Oracle and clone the 
+-	Log in as Oracle and clone the DBCS Workshop git.
+```
 sudo su - oracle
-git clone https://github.com/pcdavies/DatabaseCloudServiceForDBAsOCI.git
-mv /home/oracle/DatabaseCloudServiceForDBAsOCI/workshops/dbcs-dba/install/install_oci.zip .
-unzip install.zip
-/home/oracle/install.sh
-exit
-sudo su -
-/home/oracle/yum.sh
+svn export https://github.com/pcdavies/DatabaseCloudServiceForDBAsOCI/trunk/workshops/dbcs-dba/install/install_oci.zip
+unzip install_oci.zip
+/home/oracle/install_oci.sh
 exit
 ```
-![](images/setup/131.png)
+![](images/setup/045.png)
 
--	Start VNC Server.  You can optionally adjust the geometry to match your screen (eg: `vncserver -geometry 1280x720`).  You will be prompted to enter a password.  Do not use the password that we have been specifying in other places in this lab document.  **VNC is open to the internet.  Select your own secure password**.  Be sure you are sudo su to oracle user.
-	- `sudo su - oracle`
+-	Log back in as root and install the desktop packages.  Enter the following.
+```
+sudo su -
+/home/oracle/yum.sh
+```
+![](images/setup/046.png)
+
+-	While we are logged in as root we also need to open the VNC server port that we'll be starting in the next step.  Enter the following.
+	- `sed -i 's/IPTABLES_SAVE_ON_RESTART="no"/IPTABLES_SAVE_ON_RESTART="yes"/g' /etc/sysconfig/iptables-config`
+	- `iptables -I INPUT -p tcp -m tcp --dport 5901 -j ACCEPT`
+	- `service iptables restart`
+
+	![](images/setup/046.png)
+
+-	Start VNC Server.  You can optionally adjust the geometry to match your screen (eg: `vncserver -geometry 1280x720`).  You will be prompted to enter a password.  Do not use the password that we have been specifying in other places in this lab document.  **VNC is open to the internet.  Select your own secure password.  We suggest you use your cloud password.**.  Be sure you are sudo su to oracle user.
+	- `exit` - this is exist out of the root user
+	`sudo su - oracle`
 	- `vncserver`
 
-	![](images/setup/141.png)
+	![](images/setup/047.png)
 
-### **STEP 5**: Open Port 5901 (VNC) and log into the desktop
+### **STEP 8**: Open Port 5901 (VNC) and log into the desktop
 
 -	Log back into the Cloud Console and select Database Service.
 
-	![](images/setup/136.png)
+	![](images/setup/048.png)
 
-	![](images/setup/137.png)
+	![](images/setup/049.png)
 
--	Select Access Rules on the right.
+-	Select Networking - Virtual Cloud Networks.
 
-	![](images/setup/138.png)
+	![](images/setup/050.png)
 
-	![](images/setup/139.png)
+-	Select the Virtual Cloud Network you created earlier.
 
--	Create rule.  Note you need to refresh your screen to see the new rule after selecting create.
+	![](images/setup/051.png)
 
-	![](images/setup/140.png)
+-	Select Security Lists.
 
-	![](images/setup/141.png)
+	![](images/setup/052.png)
 
--	Start your VNC Viewer and log in.
+-	Select Default Security List.
 
-	![](images/setup/142.png)
+	![](images/setup/053.png)
+
+-	Select Edit All Rules.
+
+	![](images/setup/054.png)
+
+-	Add Ingress Rule opening port 5901.
+
+	![](images/setup/055.png)
+
+-	Enter the following details. 
+
+	![](images/setup/056.png)
+
+-	Scroll down and save the rules.  Note the rule will take about a minute to become active.
+
+	![](images/setup/057.png)
+
+-	Start your VNC **Viewer Client** and log in with the password you entered above.  Use your own WorkshopImage IP address (not the one in the screenshot below).
+
+	![](images/setup/059.png)
 
 -	This is the WorkshopImage desktop.  The background may be different across the screen shots.
 
@@ -247,40 +277,40 @@ exit
 
 -	We need to disable the screen saver to prevent a screen unlock prompt.  Go to the system menu on the desktop and de-activate screen saver.  If you delay in this step and the screen locks up you will need to kill the vncserver (`vncserver -kill :1`) and restart it (`vncserver`) in your terminal window.
 
-	![](images/setup/144.png)
+	![](images/setup/060.png)
 
-	![](images/setup/145.png)
+	![](images/setup/061.png)
 
 ### **STEP 6**: Set up shortcut to SQLDeveloper and import connections
 
 -	Right click on the desktop and create a new launcher on the desktop.  Enter the Name and Command:
 	- **Name:** `SqlDeveloper`
-	- **Command:** `/u01/app/oracle/product/12.2.0/dbhome_1/sqldeveloper/sqldeveloper/bin/sqldeveloper`
+	- **Command:** `/u01/app/oracle/product/12.2.0.1/dbhome_1/sqldeveloper/sqldeveloper/bin/sqldeveloper`
 
-	![](images/setup/146.png)
+	![](images/setup/062.png)
 
-	![](images/setup/147.png)
+	![](images/setup/063.png)
 
--	Select the sqldeveloper icon from the following directory: `/u01/app/oracle/product/12.2.0/dbhome_1/sqldeveloper/`
+-	Select the sqldeveloper icon from the following directory: `/u01/app/oracle/product/12.2.0.1/dbhome_1/sqldeveloper/`
 
-	![](images/setup/148.png)
+	![](images/setup/064.png)
 
-	![](images/setup/149.png)
+	![](images/setup/065.png)
 
 -	Double click on the desktop icon to start sqldeveloper. Select no to import connections.
 
-	![](images/setup/150.png)
+	![](images/setup/066.png)
 
 -	Right click on connections and select import connections.
 
-	![](images/setup/151.png)
+	![](images/setup/067.png)
 
 -	Browse for connections file.
 
-	![](images/setup/152.png)
+	![](images/setup/068.png)
 
-	![](images/setup/153.png)
+	![](images/setup/069.png)
 
-	![](images/setup/154.png)
+	![](images/setup/070.png)
 
-	![](images/setup/155.png)
+	![](images/setup/071.png)
