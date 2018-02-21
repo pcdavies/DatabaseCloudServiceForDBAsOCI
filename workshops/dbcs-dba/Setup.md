@@ -186,7 +186,7 @@ The following creates a new DBCS Enterprise instance with backup to cloud.  Use 
 
 	![](images/setup/043.png)
 
--	Install packages for desktop and VNC, and then install Oracle database objects (this will take a few minutes).  Enter the following:
+-	Install the yum repository and then adobe and git packages.  Enter the following:
 
 ```
 sudo su -
@@ -194,9 +194,14 @@ cp /tmp/public-yum-ol6.repo /etc/yum.repos.d
 rpm -ivh /tmp/adobe-release-x86_64-1.0-1.noarch.rpm
 yum -y install git
 exit
+```
+
+![](images/setup/044.png)
+
+-	Log in as Oracle and clone the 
 sudo su - oracle
-git clone https://github.com/pcdavies/DatabaseCloudServiceForDBAs.git
-mv /home/oracle/DatabaseCloudServiceForDBAs/workshops/dbcs-dba/install/install_oci.zip .
+git clone https://github.com/pcdavies/DatabaseCloudServiceForDBAsOCI.git
+mv /home/oracle/DatabaseCloudServiceForDBAsOCI/workshops/dbcs-dba/install/install_oci.zip .
 unzip install.zip
 /home/oracle/install.sh
 exit
