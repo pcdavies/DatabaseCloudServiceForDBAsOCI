@@ -155,7 +155,28 @@ Note that if you performed the setup steps for this and the following labs some 
 
 ### **STEP 6**:  Record the IP Address of the Database Cloud Service
 
+-	Log back into the Cloud Console to copy the IP address of the new Alpha01A-DBCS instance.
+
+	![](images/SS-100/028.png)
+
+-	Note the IP address of the `Alpha01A-DBCS` instance.
+
+	![](images/SS-100/030.png)
+
 ### **STEP 7**:  Open a New SSH Connection to Browse the Database Image
+
+-	Since we will be using a terminal window frequently we will pin the terminal window to the panel.  Open a new terminal window on the VNC desktop and enter the following.
+
+	![](images/SS-100/031.png)
+
+-	Open a new terminal window.
+
+	![](images/SS-100/032.png)
+
+-	We need to first convert the ppk to a Linux compatible version, and then connect to the remote Alpha01A-DBCS instance.  Enter the following:
+	- `puttygen /tmp/privateKey.ppk -O private-openssh -o privateKey`
+	- `ssh -o StrictHostKeyChecking=no -i /tmp/privateKey opc@<your-DB-IP>`
+
 
 ## Access the Database Consoles
 

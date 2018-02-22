@@ -72,6 +72,16 @@ The following creates a new DBCS Enterprise instance with backup to cloud.  Use 
 
 	![](images/setup/016.png)
 
+-	Next export OpenSSH key for use on the Linux Image later in the labs.  In puttygen go to Conversions.
+
+	![](images/setup/016.1.png)
+
+	![](images/setup/016.2.png)
+
+-	Name the key `privateKey`.  Note this version will NOT have the .ppk suffix that the private key you saved above.
+
+	![](images/setup/016.3.png)
+
 ### **STEP 4**: Create **Workshop** Image (DBCS Instance)
 
 -	Select DB System from top menu.
