@@ -182,6 +182,7 @@ The following creates a new DBCS Enterprise instance with backup to cloud.  Use 
 
 -	Copy the files to the /tmp directory.  Enter the following:
 	- `chmod a+rw *`
+	- `mv publicKey publicKey.pub`
 	- `cp * /tmp`
 
 	![](images/setup/043.png)
