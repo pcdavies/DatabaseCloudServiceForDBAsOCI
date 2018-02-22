@@ -173,16 +173,72 @@ Note that if you performed the setup steps for this and the following labs some 
 
 	![](images/SS-100/032.png)
 
--	We need to first convert the ppk to a Linux compatible version, and then connect to the remote Alpha01A-DBCS instance.  Enter the following:
-	- `puttygen /tmp/privateKey.ppk -O private-openssh -o privateKey`
+-	Enter the following to connect.
 	- `ssh -o StrictHostKeyChecking=no -i /tmp/privateKey opc@<your-DB-IP>`
 
+-	Enter the following to review the image layout.
+	- `sudo su - oracle`
+	- `. oraenv` note there is a space between dot and ora - enter `ORCL`
+	- `env | grep ORA`
+	- `cd $ORACLE_HOME`
+	- `ls`
+	- `exit`
+
+	![](images/SS-100/033.png)
 
 ## Access the Database Consoles
 
 ### **STEP 8**:  Access Database Monitor
 
+-	Log into the Cloud Console.  We will first be opening port 443 (https).
+
+	![](images/SS-100/034.png)
+
+-	Select `Database (OCI)`
+
+	![](images/SS-100/035.png)
+
+	![](images/SS-100/036.png)
+
+-	Go Virtual Cloud Network
+
+	![](images/SS-100/037.png)
+
+-	Select the network you created and used to access Alpha01A-DBCS.  This would likely be the latest one at the top.
+
+	![](images/SS-100/038.png)
+
+-	Select Security Lists
+
+	![](images/SS-100/039.png)
+
+	![](images/SS-100/040.png)
+
+-	Edit All Rules
+
+	![](images/SS-100/041.png)
+
+-	Add Rule
+
+	![](images/SS-100/042.png)
+
+-	Create 443 rule, and then scroll down and Save Security List Rules.
+
+	![](images/SS-100/043.png)
+
+	![](images/SS-100/044.png)
+
+
+
+
+
+
 ### **STEP 9**:  Access Enterprise Manager DB Express
+
+-	We will use tunneling to access the EM Express Console on Alpha01A-DBCS, which is running on port 5500.  Since we are doing this from the WorkshopImage, and that image is also running EM Express on 5500, we will tunnel using 5555 (an arbitrary open port).  Open a terminal window and enter the following.  Note - do **NOT** close the window after the tunnel is opened.
+	- `ssh -o StrictHostKeyChecking=no -i /tmp/privateKey -L 5555:<Alpha01A-DBCS IP>:5500 opc@<Alpha01A-DBCS IP>`
+
+	![](images/SS-100/044.png)
 
 ### **STEP 10**:  Access Apex Monitor
 
