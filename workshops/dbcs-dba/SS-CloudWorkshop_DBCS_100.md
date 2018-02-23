@@ -274,11 +274,17 @@ Note that if you performed the setup steps for this and the following labs some 
 
 	![](images/SS-100/052.png)
 
--	Login with the following details:
+-	Login with the following details.  Note the first time you log in it will take a minute or two.
 	- **User Name:** `sys`
 	- **Password:** `ALpha2018__` (two underscores)
 	- **check as sysdba:** 
 
 	![](images/SS-100/053.png)
+
+-	You may encounter a but whereby the browser fails to fully open the web page.  This is due to an adobe-flash bug with certain browsers.  To resolve this go (while the browser is locked opening the page) to tools (top menu in the browser) and select `tools > Web Developer > Debugger`.
+
+	![](images/SS-100/054.png)
+
+	![](images/SS-100/055.png)
 
 This completes Lab 100.  You can proceed to Lab 200.
