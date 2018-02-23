@@ -153,13 +153,13 @@ Note that if you performed the setup steps for this and the following labs some 
 
 ## SSH Configuration and Image Exploration
 
-### **STEP 6**:  Record the IP Address of the Database Cloud Service
+### **STEP 6**:  Record the IP Addresses of the Database Cloud Service
 
 -	Log back into the Cloud Console to copy the IP address of the new Alpha01A-DBCS instance.
 
 	![](images/SS-100/028.png)
 
--	Note the IP address of the `Alpha01A-DBCS` instance.
+-	Note the Private and Public IP addresses of the `Alpha01A-DBCS` instance.  Write these down, we will use them later.
 
 	![](images/SS-100/030.png)
 
@@ -174,7 +174,7 @@ Note that if you performed the setup steps for this and the following labs some 
 	![](images/SS-100/032.png)
 
 -	Enter the following to connect.
-	- `ssh -o StrictHostKeyChecking=no -i /tmp/privateKey opc@<your-DB-IP>`
+	- `ssh -o StrictHostKeyChecking=no -i /tmp/privateKey opc@<Alpha01A-DBCS IP>`
 
 -	Enter the following to review the image layout.
 	- `sudo su - oracle`
@@ -186,59 +186,99 @@ Note that if you performed the setup steps for this and the following labs some 
 
 	![](images/SS-100/033.png)
 
-## Access the Database Consoles
+## Create Connection in SQL Developer
 
-### **STEP 8**:  Access Database Monitor
+### **STEP 8**:  Set up CDB Connection in SQL Developer
 
--	Log into the Cloud Console.  We will first be opening port 443 (https).
+-	Open SQL Developer off the desktop and select the View - SSH menu.
 
 	![](images/SS-100/034.png)
 
--	Select `Database (OCI)`
+-	Right click on SSH Host and select New SSH Host.
 
 	![](images/SS-100/035.png)
 
+-	Enter the following.
+	- **Name:** `Alpha01A-DBCS`
+	- **Host:** `<Alpha01A-DBCS IP>`
+	- **Username:** `opc`
+	- Select Use Key File
+
 	![](images/SS-100/036.png)
 
--	Go Virtual Cloud Network
+-	Select `privateKey` in the `/tmp` directory.
 
 	![](images/SS-100/037.png)
 
--	Select the network you created and used to access Alpha01A-DBCS.  This would likely be the latest one at the top.
+-	Add a Local Port Forward.  Be sure to specify the private IP (not public one you have  been using).
+	- **Name:** `Database`
+	- **Host:** `<Private IP for Alpha01A-DBCS>`
+	- **Use specific local port:** `1530`
 
 	![](images/SS-100/038.png)
 
--	Select Security Lists
+-	Test the tunnel by right clicking on it and select test.
 
 	![](images/SS-100/039.png)
 
 	![](images/SS-100/040.png)
 
--	Edit All Rules
+-	In a separate window log into the Cloud Console and select the `Alpha01A-DBCS` instance.  We will copy/paste the host and database name from the instance information.
 
 	![](images/SS-100/041.png)
 
--	Add Rule
+-	The connect string will be a concatination of the Database Unique Name and the Host Domain Name.
 
 	![](images/SS-100/042.png)
 
--	Create 443 rule, and then scroll down and Save Security List Rules.
+-	Go back to SQL Developer and create a new connection.  Right click on Connections and then select the New Connection.
 
 	![](images/SS-100/043.png)
 
+-	Enter the following and then select Test:
+	- **Connection Name:** `Alpha01A-DBCS
+	- **Username:** `sys`
+	- **Password:** `ALpha2018__`
+	- **Connection Type:** `SSH`
+	- **Role:** `SYSDBA`
+	- **Port Forward:** `Database (Alpha01A-DBCS)
+	- **Service Name:** `<your database unique name.hostname>` from above
+
 	![](images/SS-100/044.png)
 
+-	Select Connect.
 
-
-
-
+	![](images/SS-100/045.png)
 
 ### **STEP 9**:  Access Enterprise Manager DB Express
 
--	We will use tunneling to access the EM Express Console on Alpha01A-DBCS, which is running on port 5500.  Since we are doing this from the WorkshopImage, and that image is also running EM Express on 5500, we will tunnel using 5555 (an arbitrary open port).  Open a terminal window and enter the following.  Note - do **NOT** close the window after the tunnel is opened.
-	- `ssh -o StrictHostKeyChecking=no -i /tmp/privateKey -L 5555:<Alpha01A-DBCS IP>:5500 opc@<Alpha01A-DBCS IP>`
+-	We first need to configure the http port.  To verify whether the EM Express port is configured we need to set the http port.  Using the connection you just created above enter these commands one by one, hightlight them and then execute them.
+-	`exec dbms_xdb_config.sethttpport(5500);`
+-	`select dbms_xdb.gethttpport() from dual;`
 
-	![](images/SS-100/044.png)
+	![](images/SS-100/046.png)
 
-### **STEP 10**:  Access Apex Monitor
+	![](images/SS-100/047.png)
 
+-	We will use tunneling to access the EM Express Console on Alpha01A-DBCS, which is running on port 5500.  Since we are doing this from the WorkshopImage, and that image is also running EM Express on 5500, we will tunnel using 5555 (an arbitrary open port).  Open a terminal window and enter the following.  Note - do **NOT** close the window after the tunnel is opened.  Note you are entering BOTH the private and public IPs.
+	- `ssh -o StrictHostKeyChecking=no -i /tmp/privateKey -L 5555:<Private IP of Alpha01A-DBCS>:5500 opc@<Alpha01A-DBCS IP>`
+
+	![](images/SS-100/048.png)
+
+-	Open a Firefox Browser and enter the following URL.  Note you will be prompted to confirm a security exception - accept all the prompts.
+	- `http://localhost:5555/em`
+
+	![](images/SS-100/050.png)
+
+	![](images/SS-100/051.png)
+
+	![](images/SS-100/052.png)
+
+-	Login with the following details:
+	- **User Name:** `sys`
+	- **Password:** `ALpha2018__` (two underscores)
+	- **check as sysdba:** 
+
+	![](images/SS-100/053.png)
+
+This completes Lab 100.  You can proceed to Lab 200.
