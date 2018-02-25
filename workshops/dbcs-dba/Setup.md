@@ -207,12 +207,11 @@ exit
 ```
 ![](images/setup/044.png)
 
--	Log in as Oracle and clone the DBCS Workshop git.
+-	Log in as Oracle and copy the install files from the DBCS Workshop git.
 ```
 sudo su - oracle
 svn export https://github.com/pcdavies/DatabaseCloudServiceForDBAsOCI/trunk/workshops/dbcs-dba/install/install_oci.zip
 unzip install_oci.zip
-/home/oracle/install_oci.sh
 exit
 ```
 ![](images/setup/045.png)
@@ -325,3 +324,19 @@ sudo su -
 	![](images/setup/070.png)
 
 	![](images/setup/071.png)
+
+### **STEP 7**: Import data
+
+-	Update the tnsnames.ora file to add pdb1 and new_pdb (used later).  Open a new terminal window and enter the following:
+	- `gedit /u01/app/oracle/product/12.2.0.1/dbhome_1/network/admin/tnsnames.ora`
+
+	![](images/setup/072.png)
+
+-	Copy the CDB connection entry into two more entries that we'll modify for pdb1 and new_pdb.  Update as follows.  Then save.
+
+	![](images/setup/073.png)
+
+-	Open a terminal window and enter the following:
+	- `./install_oci.sh`
+
+	![](images/setup/074.png)

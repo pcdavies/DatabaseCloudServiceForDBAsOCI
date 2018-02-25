@@ -1,6 +1,6 @@
 ![](images/SS-200/001.png)
 
-Update January 25, 2018
+Update February 23, 2018
 
 ## Introduction
 
@@ -71,13 +71,9 @@ This lab supports the following use cases:
 	![](images/SS-200/008.png)
 
 -	Select the SQL tab above and enter the following
-	- `keystore identified by Alpha2018_`
+	- `keystore identified by ALpha2018__`
 
 	![](images/SS-200/009.png)
-
-	![](images/SS-200/010.png)
-
--	You should see the new PDB
 
 	![](images/SS-200/010.png)
 
@@ -85,217 +81,135 @@ This lab supports the following use cases:
 
 	![](images/SS-200/011.png)
 
--	Click on the Data Files tab for the ALPHACLONE to review the data files created during the cloning operation.
+-	Click on the Data Files tab for the ALPHACLONE to review the data files created during the cloning operation.  Note that DBCS on OCI is using Automatic Storage Management (ASM).  
 
 	![](images/SS-200/012.png)
 
 ## Clone the NEW_PDB DB to the Cloud
 
-### **STEP 3**:  Create SSH and SYS Database Cloud Connections
+### **STEP 3**:  Change Permissions to the TDE Wallet directory and update the sqlnet.ora file.
 
--   First we need to setup a SSH host connection to the Database Cloud Service instance. From the top menu select **View -> SSH** to display SSH hosts panel on the left.
+All Oracle DBCS Services are protected by Transparent Data Encryption (TDE) by default.  Wallets with encrypted keys are used to encrypt and decrypt the data.  Any time you move the dbf data files from one instance to another you need to migrate the keys with the data.  A wallet directory holds the keys to the data, and the permissions need to modified to export or import the keys.  Enter the following in a terminal window.  The wallets are in a directory that matches your database unique name.  This was used in the Local Sys CDB connection (right click on the connection in SQL Developer), and is also in the Cloud Console (WorkshopImage - NOT Alpha01A-DBCS).
+
+-	Enter the following in a terminal window.
+	- `chmod 755 /opt/oracle/dcs/commonstore/wallets/tde/<your database unique name for WorkshopImage>`
 
 	![](images/SS-200/013.png)
 
--   Right click on **SSH Hosts** and select **New SSH Host**.
+-	Update the sqlnet.ora file.  First review the file.  It specifies the wallet directory location.  This needs to be updated to replace the `$ORACLE_UNQNAME` variable with your database unique name (literal rather than variable).
+	- ` cat /u01/app/oracle/product/12.2.0.1/dbhome_1/network/admin/sqlnet.ora`
+
+	![](images/SS-200/013.1.png)
+
+-	Update it with the following command.  Be sure to specify the name of the database noted earlier (you should have written this down).  You are replacing $ORACLE_UNQNAME with your own ORCL_iad... name.
+	- `sed -i 's/$ORACLE_UNQNAME/<your database unique name for WorkshopImage>/g' /u01/app/oracle/product/12.2.0.1/dbhome_1/network/admin/sqlnet.ora`
+
+	![](images/SS-200/013.2.png)
+
+### **STEP 4**:  Export Encryption Keys from NEW_PDB
+
+All DBCS instances have both an auto open wallet and a password wallet.  When moving data the **password wallet** must move with the data.  To open the password wallet you must first remove the auto open wallet.
+
+-	Review status of encryption wallet.  Open a terminal window (or use your existing open window) and enter the following.
+	- `. oraenv` (enter ORCL when prompted).
+	- `sqlplus sys/ALpha2018__ as sysdba`
+	- `select * from v$encryption_wallet;`
 
 	![](images/SS-200/014.png)
 
--   We will now confiAlphagure an SSH connection to our DBCS instance
-
-	**Name**: `Alpha01A-DBCS`
-
-	**Host**: `<Database Image public IP you obtained in lab 100>`
-
-	**Username**: `oracle`
-	
-	![](images/SS-200/015.png)
-
--   Select **Use key file** and click **Browse...** Select file **/home/oracle/privateKey** and click **Open**.
-
-	![](images/SS-200/016.png)
-
--   Click **Add a Local Port Forward** and enter the following values:
-
-	**Name**: `Database`
-
-	**Host**: `<Database Image Public IP you obtained in lab 100>`
-	
--   Select **Use specific local port** and enter **1530**
-
-	**NOTE**: We are using port 1530 since 1521 is already in use for our local database.
-
-	![](images/SS-200/017.png)
-
--	Right click on the SSH connection and test.  You should see a message saying the connection was successful.
-
-	![](images/SS-200/018.png)
-
-	![](images/SS-200/019.png)
-
-### **STEP 4**:  Create a SQL Developer connection to the Public Cloud database SYS schema
-
--   Click the green plus sign ![](images/SS-200/image24.png) in the **Connections** window to create a new connection; enter the following connection details:
-
-	- **Connection Name**: 	`sys - OPCDBCS`
-	- **Username**: 			`sys`
-	- **Password**:			`Alpha2018_`
-	- **Check** 				"Save Password"
-	- **Optionally select a color for the connection**
-	- **ConnectionType**: 	`SSH`
-	- **Role**:				`SYSDBA`
-	- **Service Name**: 		`ORCL.<Your ID Domain>.oraclecloud.internal`
-	
-	![](images/SS-200/020.png)
-
-	![](images/SS-200/021.png)
-
--   Click **Test** to confirm the information was entered correctly.
-
-	![](images/SS-200/022.png)
-
--   Click **Connect** to save the connection information which opens a new SQL Worksheet.
-
-	![](images/SS-200/023.png)
-
-	![](images/SS-200/024.png)
-
-### **STEP 5**:  Unplug NEW_PDB
-
--	Since TDE requires additional commands that are not included in the generation of SQL within SQL Developer we will do step 5 in a terminal window.  Right click on the desktop and open a terminal window.
-
-	![](images/SS-200/025.png)
-
--	Shut down the database, remove the auto-open wallet, and start the database back up again.  We will be using the password wallet.  Enter the following commands
-	- `sqlplus sys/Alpha2018_ as sysdba`
-	- `shutdown immediate`
+-	Shut down the database, remove the auto-open wallet, and start the database back up again.  We will be using the password wallet.  Enter the following commands in the open terminal window.
+	- `shutdown immediate;`
 	- `exit`
-	- `mv /u01/app/oracle/admin/ORCL/tde_wallet/cwallet.sso /u01/app/oracle/admin/ORCL/cwallet.sso`
-	- `sqlplus sys/Alpha2018_ as sysdba`
+	- `mv  /opt/oracle/dcs/commonstore/wallets/tde/<your database unique name for WorkshopImage>/cwallet.sso /opt/oracle/dcs/commonstore/wallets/tde/cwallet.sso`
+	- `sqlplus sys/ALpha2018__ as sysdba`
 	- `startup`
 	- `alter pluggable database all open;`
 
-	![](images/SS-200/026.png)
+	![](images/SS-200/015.png)
 
--	We need to open the password keystore.
-	- `administer key management set keystore open identified by Alpha2018_ container=all;`
+	![](images/SS-200/016.png)
+
+-	Review the status of the **password wallet**.  Enter the following.
+	- `select * from v$encryption_wallet;`
+
+	![](images/SS-200/017.png)
+
+-	Note the password wallet is closed in the CDB.  We need to open the password keystore in the CDB, and also in the PDB(s).  Now that the auto open wallet has been removed opening and closing wallets and keystores is a manual process.
+	- `administer key management set keystore open identified by ALpha2018__ container=all;`
 	- `alter session set container=new_pdb;`
-	- `administer key management set keystore open force keystore identified by Alpha2018_;`
+	- `administer key management set keystore open force keystore identified by ALpha2018__;`
 
 	![](images/SS-200/027.png)
 
--	Since we took the defaults for datafile location when we cloned the database the location directory for the new_pdb was generated.  Open a browser window to locate that directory.  It will be a multi-digit generated directory name.  It also has a datafile sub-directory.  Copy this so we can paste it into the commands below.  Since it is derived it will be unique for you.
+-	Now we can export the encryption keys to the pluggable database.  Enter the following commands. 
+	- `administer key management export encryption keys with secret "Alpha2018_" to '/home/oracle/new_pdb.p12' identified by ALpha2018__;`
 
-	![](images/SS-200/028.png)
-
-	![](images/SS-200/029.png)
-
-	![](images/SS-200/030.png)
-
--	We now need to export the encryption keys to the pluggable database, close the pluggable database, and unplug it.  Enter the following commands. **Substititute the 63B... directory name below with the one you copied from above.**
-	- `administer key management export encryption keys with secret "Alpha2018_" to '/u02/app/oracle/oradata/ORCL/63B216B6E63662CEE053021E41641929/datafile/new_pdb.p12' identified by Alpha2018_;`
-	- `alter session set container=cdb$root;`
-	- `alter pluggable database new_pdb close;`
-	- `alter pluggable database new_pdb unplug into '/u02/app/oracle/oradata/ORCL/63B216B6E63662CEE053021E41641929/datafile/new_pdb.xml';`
 
 	![](images/SS-200/031.png)
 
-### **STEP 6**:  Copy the data files of new cloned on-premise PDB to the Oracle Cloud
+### **STEP 5**:  Clone NEW_PDB in WorkshopImage to Alpha01A-DBCS
 
--	Exit out of SQL PLus and tar the files in the pluggable database.  Be sure to first navigate to the datafile directory in your pdb/datafile location.
-	- `exit;`
-	- `cd /u02/app/oracle/oradata/ORCL/63B216B6E63662CEE053021E41641929/datafile`
-	- `tar -cvzf new_pdb.tar.gz *`
+-	Since we need to use tunnels to communicate with the remote DBCS instance when using ports other than 22 (which is open) we need to create a new tunnel for port 1521 back to WorkshopImage.  We first copy the SSH private key to Alpha01A-DBCS.  We then open a new terminal window and SSH into the remote Alpha01A-DBCS instance - see terminal window heading).  You will then create a tunnel in Alpha01A-DBCS back to WorkshopImage.  This might seem confusing as you are connecting to a remote instance and then creating a tunnel back to originating instance.  This will be used by the database.
+	- `scp -o StrictHostKeyChecking=no -i /tmp/privateKey /tmp/privateKey opc@<Alpha01A-DBCS IP>:.`
+	- `ssh -i /tmp/privateKey opc@<Alpha01A-DBCS IP>`
+	- `ssh -o StrictHostKeyChecking=no -i privateKey -L 1530:<Private IP of WorkshopImage>:1521 opc@<WorkshopImage IP>`
+	- Minimize this window but do not close it.
+
+	![](images/SS-200/031.1.png)
+
+-	Next open SQL Developer and then open the Alpha01A-DBCS connection. 
 
 	![](images/SS-200/032.png)
 
--	SSH into the Alpha01A-DBCS instance, create an new_pdb directory, and then copy the pluggable database to DBCS.  Be sure to replace the 63B... directory below with your own.
-	- `ssh -i /home/oracle/privateKey oracle@<Alpha01A-DBCS IP>`
-	- `mkdir /u02/app/oracle/oradata/ORCL/new_pdb`
-	- `exit`
-	- `scp -i /home/oracle/privateKey /u02/app/oracle/oradata/ORCL/63B216B6E63662CEE053021E41641929/datafile/new_pdb.tar.gz oracle@<Alpha01A-DBCS IP>:/u02/app/oracle/oradata/ORCL/new_pdb`
+-	Create a database link in Alpha01A-DBCS that points back to the WorkshopImage.  Note the database link name must match the source database and hostname.  Enter the following.
 
-	![](images/SS-200/033.png)
-
--	Log into the target instance and Untar the files
-	- `ssh -i /home/oracle/privateKey oracle@<Alpha01A-DBCS IP>`
-	- `cd /u02/app/oracle/oradata/ORCL/new_pdb`
-	- `tar -xvzf new_pdb.tar.gz`
-
+```
+create database link ORCL.<host domain name>
+connect to system identified by ALpha2018__
+using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=<WorkshopImage IP>)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=<database unique name>.<host domain name>)))';
+```
 	![](images/SS-200/034.png)
 
-### **STEP 7**:  Plug the cloned on-premise database to Oracle Cloud Database
-
--	Open Firefox (next step).  If the page does not come up re-start your ssh tunnel.
+-	Test the link.  Enter the following.  Note that tunnels do tend to drop enventually over time.  If you get an error check that your tunnel is still up and in effect.
+	- `select sysdate from dual@orcl.<host domain name>;`
 
 	![](images/SS-200/035.png)
 
--	Open Firefox on the Desktop and log into Enterprise Manager Express.  If the page does not come up check that your tunnel is still running.
-	- `https://localhost:5500/em`
-	- **User Name:** `sys`
-	- **Password:** `Alpha2018_`
-	- **Container Name:** leave blank
-	- check 'as sysdba'
+-	Reestablish tunnel if necessary.
 
 	![](images/SS-200/036.png)
 
--	Click on the CDB link.  You may need to go to tools > web developer > debugger screen if the login screen does not show (Firefox/Flash bug).
+-	Clone the NEW_PDB.  Enter the following in SQL Developer.  This will take several minutes.
+	- `create pluggable database new_pdb FROM new_pdb@orcl.<host domain name> keystore identified by ALpha2018__;`
 
 	![](images/SS-200/037.png)
 
--	Click on Plug
+### **STEP 8**:  Create a SQL Developer connection to the Public Cloud database ALPHAPDB schema
+
+-	Back in SQL Developer select the DBA view from the drop down.  We are first going to confirm the NEW_PDB exists now in the Alpha01A-DBCS instance.  
 
 	![](images/SS-200/038.png)
 
--	Enter Metadata file, uncheck the 'Reuse source datafile' and enter the Source Datafile Location
-	- **Metadata File:** `/u02/app/oracle/oradata/ORCL/new_pdb/new_pdb.xml`
-	- **Source Datafile Location:** `/u02/app/oracle/oradata/ORCL/new_pdb`
+-	Right click on the Connections in the DBA panel and add the Alpha01A-DBCS connection.
 
 	![](images/SS-200/039.png)
 
+-	Expand the Container Database branch and confirm NEW_PDB exists.  Click on it - note that it is in mounted state.
+
 	![](images/SS-200/040.png)
 
--	Notice the pluggable database has a violation.  Click on this.  The PDB need to import keys from source.  Note you can disregard the other violations.
+-	Right click on NEW_PDB and select modify state, and then hit Apply.
 
 	![](images/SS-200/041.png)
 
--	Cloud databases have TDE configured by default, but we need to import the new_pdb key.  Open a terminal window on the compute desktop and SSH into the Alpha01A-DBCS instance.
-	- `ssh -i /home/oracle/privateKey oracle@<Alpha01A-DBCS IP>`
-	- `sqlplus sys/Alpha2018_ as sysdba`
-	- `alter session set container = new_pdb;`
-	- `administer key management import keys with secret "Alpha2018_" from '/u02/app/oracle/oradata/ORCL/new_pdb/new_pdb.p12' force keystore identified by Alpha2018_ with backup;`
-
 	![](images/SS-200/042.png)
-
--	Review status of pluggable database in EM.  Open (or go back to) Firefox and log into IM.  Navigate to containers.
-	- `https://localhost:5500/em`
-	- **User:** `sys`
-	- **password:** sys password
 
 	![](images/SS-200/043.png)
 
--	Highlight the NEW_PDB pluggable database (don't click on the link) and select action close.
-
-	![](images/SS-200/044.png)
-
-	![](images/SS-200/045.png)
-
-	![](images/SS-200/046.png)
-
--	Re-open NEW_PDB pdb.  Optionally click on the violation.  The wallet error should be gone.
-
-	![](images/SS-200/047.png)
-
-	![](images/SS-200/048.png)
-
-	![](images/SS-200/049.png)
-
-### **STEP 8**:  Create a SQL Developer connection to the Public Cloud database ALPHAPDB schema
-
--   Back in SQL Developer, click the green plus sign in the Connections window to create a new connection; enter the following connection details and click Save
-	- **Connection Name**:	`Alpha01A-DBCS`
+-   Now right click the Alpha01A-DBCS connection and select properties.  We will edit this to create a new connection to the NEW_PDB PDB.  window to create a new connection; enter the following connection details and click Save
+	- **Connection Name**:	`Alpha01A-DBCS-NEW_PDB`
 	- **Username**:			`alpha`
-	- **Password**:			`Alpha2018_`
+	- **Password**:			`ALpha2018__`
 	- **Check** "Save Password"
 	- **Optionally select a color for the connection**
 	- **ConnectionType**:		`SSH`
