@@ -106,7 +106,159 @@ All Oracle DBCS Services are protected by Transparent Data Encryption (TDE) by d
 
 	![](images/SS-200/013.2.png)
 
-### **STEP 4**:  Export Encryption Keys from NEW_PDB
+### **STEP 4**:  Clone NEW_PDB in WorkshopImage to Alpha01A-DBCS
+
+-	Since we need to use tunnels to communicate with the remote DBCS instance when using ports other than 22 (which is open) we need to create a new tunnel for port 1521 back to WorkshopImage.  We first copy the SSH private key to Alpha01A-DBCS.  We then open a new terminal window and SSH into the remote Alpha01A-DBCS instance - see terminal window heading).  You will then create a tunnel in Alpha01A-DBCS back to WorkshopImage.  This might seem confusing as you are connecting to a remote instance and then creating a tunnel back to originating instance.  This will be used by the database.
+	- `scp -o StrictHostKeyChecking=no -i /tmp/privateKey /tmp/privateKey opc@<Alpha01A-DBCS IP>:.`
+	- `ssh -i /tmp/privateKey opc@<Alpha01A-DBCS IP>`
+	- `ssh -o StrictHostKeyChecking=no -i privateKey -L 1530:<Private IP of WorkshopImage>:1521 opc@<WorkshopImage IP>`
+	- Minimize this window but do not close it.
+
+	![](images/SS-200/031.1.png)
+
+-	Next open SQL Developer and then open the Alpha01A-DBCS connection. 
+
+	![](images/SS-200/032.png)
+
+-	Create a database link in Alpha01A-DBCS that points back to the WorkshopImage.  Note the database link name must match the source database and hostname.  Enter the following.
+
+```
+create database link ORCL.<host domain name>
+connect to system identified by ALpha2018__
+using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=<WorkshopImage IP>)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=<database unique name>.<host domain name>)))';
+```
+	![](images/SS-200/034.png)
+
+-	Test the link.  Enter the following.  Note that tunnels do tend to drop enventually over time.  If you get an error check that your tunnel is still up and in effect.
+	- `select sysdate from dual@orcl.<host domain name>;`
+
+	![](images/SS-200/035.png)
+
+-	Reestablish tunnel if necessary.
+
+	![](images/SS-200/036.png)
+
+-	Clone the NEW_PDB.  Enter the following in SQL Developer.  This will take several minutes.
+	- `create pluggable database new_pdb FROM new_pdb@orcl.<host domain name> keystore identified by ALpha2018__;`
+
+	![](images/SS-200/037.png)
+
+### **STEP 5**:  Create a SQL Developer connection to the Public Cloud database ALPHAPDB schema
+
+-	Back in SQL Developer select the DBA view from the drop down.  We are first going to confirm the NEW_PDB exists now in the Alpha01A-DBCS instance.  
+
+	![](images/SS-200/038.png)
+
+-	Right click on the Connections in the DBA panel and add the Alpha01A-DBCS connection.
+
+	![](images/SS-200/039.png)
+
+-	Expand the Container Database branch and confirm NEW_PDB exists.  Click on it - note that it is in mounted state.
+
+	![](images/SS-200/040.png)
+
+-	Right click on NEW_PDB and select modify state, and then hit Apply.
+
+	![](images/SS-200/041.png)
+
+	![](images/SS-200/042.png)
+
+	![](images/SS-200/043.png)
+
+-   Now right click the Alpha01A-DBCS connection and select properties.  We will edit this to create a new connection to the NEW_PDB PDB.  window to create a new connection; enter the following connection details and click Save and then test to confirm the information was entered correctly.
+	- **Connection Name**:	`Alpha01A-DBCS-NEW_PDB`
+	- **Username**:			`alpha`
+	- **Password**:			`ALpha2018__`
+	- **Check** "Save Password"
+	- **Optionally select a color for the connection**
+	- **ConnectionType**:		`SSH`
+	- **Role:** `default`
+	- **Port Forward:**		`Database (Alpha01A-DBCS)`
+	- **Service Name**:		`new_pdb.<Your ID Domain>.oraclecloud.internal`
+	
+	![](images/SS-200/050.png)
+
+-   Click **Connect** to save the connection information, expand the connection on the left, and then expand the tables to confirm the migration was successful.
+
+	![](images/SS-200/051.png)
+
+# Cloud Migration Using Data Pump: Schema Level
+
+## Export the Alpha Schema
+
+### **STEP 6**:  Create directory for datapump export
+
+-	Open a new terminal window and create an Oracle directory (may already exist).  Enter the following.
+	- `. oraenv` (enter ORCL when prompted)
+	- `sqlplus alpha/ALpha2018__@pdb1`
+	- `create directory oracle as '/home/oracle';`
+	- `exit;`
+
+	![](images/SS-200/053.png)
+
+### **STEP 7**:  Run datapump export
+
+-	Export the data.
+	- `expdp alpha/ALpha2018__@pdb1 directory=oracle dumpfile=alphaexp.dmp compression=all`
+
+	![](images/SS-200/054.png)
+
+### **STEP 8**:  Copy the export Data Pump file to the server
+
+-   Use the following secure copy (**scp**) command to transfer the Data Pump export to the Alpha01A-DBCS instance.
+	- `scp -i /tmp/privateKey /home/oracle/alphaexp.dmp opc@<Alpha01A-DBCS IP>:.`
+
+	![](images/SS-200/055.png)
+
+### **STEP 9**:  Log into Alpha01A-DBCS and Update the sqlnet.ora file to add the pdb1 connection.
+
+-	Backup up the existing tnsnames.ora file, add a connection for pdb1, and update the pdb1 entry.  Enter the following:
+	- `ssh -i /tmp/privateKey opc@<Alpha01A-DBCS IP>`
+	- `chmod a+r /tmp/alphaexp.dmp` -- we need user opc to change permissions for importing later by oracle
+	- `sudo su - oracle`
+	- `cp /u01/app/oracle/product/12.2.0.1/dbhome_1/network/admin/tnsnames.ora /u01/app/oracle/product/12.2.0.1/dbhome_1/network/admin/tnsnames.ora_bu`
+	- `tail -n 8 /u01/app/oracle/product/12.2.0.1/dbhome_1/network/admin/tnsnames.ora >>/u01/app/oracle/product/12.2.0.1/dbhome_1/network/admin/tnsnames.ora` 
+
+-	Update the connection with PDB1 details.  Substitute your Database Unique Name inside the brackets.  **DO THIS TWICE - ONCE FOR UPPER CASE DB SUFFIX AND THEN LOWER CASE DB SUFFIX.**  Refer to the screen shot below. 
+	- `sed -i ':a;N;$!ba;s/\n/\x0/g;s/<database unique name>/PDB1/2;s/\x0/\n/g' /u01/app/oracle/product/12.2.0.1/dbhome_1/network/admin/tnsnames.ora`
+
+-	Review the updates.  It should resemble the screenshot.
+	- `cat /u01/app/oracle/product/12.2.0.1/dbhome_1/network/admin/tnsnames.ora`
+
+### **STEP 10**:  Create a new schema to hold a copy of the data
+
+-	Using the current open terminal window enter the following commands that will create an Oracle directory, and import the data.
+	- `. oraenv` -- enter ORCL when prompted
+	- `sqlplus system/ALpha2018__@pdb1;` -- log into system in the alphapdb
+	- `create user alpha2 identified by ALpha2018__;` -- create schema alpha2 (alpha already has the data from the previous lab)
+	- `grant dba to alpha2;`
+	- `connect alpha2/ALpha2018__@pdb1;` -- connect to alpha2 so we can create the oracle directory
+	- `create directory tmp as '/tmp';` -- this may already exist
+	- `exit`
+
+	![](images/SS-200/056.png)
+
+### **STEP 10**:  Import the data
+
+-	Import the data from the alpha schema to the new alpha2 schema.  Run the following command in your terminal window.
+	- `impdp alpha2/ALpha2018__@pdb1 directory=tmp dumpfile=alphaexp.dmp remap_schema=alpha:alpha2`
+
+	![](images/SS-200/057.png)
+
+# Cloud Migration Using Data Pump: Tablespace Level
+
+While datapump provides a very fast multi-threaded technique to move data quickly between Oracle Databases, it was not designed for very large volumes of data.  Transportable Tablespaces enable a database file copy technique that does not require an exported copy of the data, but instead allow you to copy the in-place data files to target, which using Datapump to capture the metadata only.
+
+## Replicate Current Data to Archive Tablespace
+
+We will be creating a copy of the alpha schema and tablespace, and replicating that to a alpha_archive schema and tablespace.
+
+-	Open a terminal window and execute the following:
+	- `/home/oracle/cr_tablespace.sh`
+
+	![](images/SS-200/058.png)
+
+### **STEP 11**:  Export Encryption Keys from NEW_PDB
 
 All DBCS instances have both an auto open wallet and a password wallet.  When moving data the **password wallet** must move with the data.  To open the password wallet you must first remove the auto open wallet.
 
@@ -147,146 +299,7 @@ All DBCS instances have both an auto open wallet and a password wallet.  When mo
 
 	![](images/SS-200/031.png)
 
-### **STEP 5**:  Clone NEW_PDB in WorkshopImage to Alpha01A-DBCS
-
--	Since we need to use tunnels to communicate with the remote DBCS instance when using ports other than 22 (which is open) we need to create a new tunnel for port 1521 back to WorkshopImage.  We first copy the SSH private key to Alpha01A-DBCS.  We then open a new terminal window and SSH into the remote Alpha01A-DBCS instance - see terminal window heading).  You will then create a tunnel in Alpha01A-DBCS back to WorkshopImage.  This might seem confusing as you are connecting to a remote instance and then creating a tunnel back to originating instance.  This will be used by the database.
-	- `scp -o StrictHostKeyChecking=no -i /tmp/privateKey /tmp/privateKey opc@<Alpha01A-DBCS IP>:.`
-	- `ssh -i /tmp/privateKey opc@<Alpha01A-DBCS IP>`
-	- `ssh -o StrictHostKeyChecking=no -i privateKey -L 1530:<Private IP of WorkshopImage>:1521 opc@<WorkshopImage IP>`
-	- Minimize this window but do not close it.
-
-	![](images/SS-200/031.1.png)
-
--	Next open SQL Developer and then open the Alpha01A-DBCS connection. 
-
-	![](images/SS-200/032.png)
-
--	Create a database link in Alpha01A-DBCS that points back to the WorkshopImage.  Note the database link name must match the source database and hostname.  Enter the following.
-
-```
-create database link ORCL.<host domain name>
-connect to system identified by ALpha2018__
-using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=<WorkshopImage IP>)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=<database unique name>.<host domain name>)))';
-```
-	![](images/SS-200/034.png)
-
--	Test the link.  Enter the following.  Note that tunnels do tend to drop enventually over time.  If you get an error check that your tunnel is still up and in effect.
-	- `select sysdate from dual@orcl.<host domain name>;`
-
-	![](images/SS-200/035.png)
-
--	Reestablish tunnel if necessary.
-
-	![](images/SS-200/036.png)
-
--	Clone the NEW_PDB.  Enter the following in SQL Developer.  This will take several minutes.
-	- `create pluggable database new_pdb FROM new_pdb@orcl.<host domain name> keystore identified by ALpha2018__;`
-
-	![](images/SS-200/037.png)
-
-### **STEP 8**:  Create a SQL Developer connection to the Public Cloud database ALPHAPDB schema
-
--	Back in SQL Developer select the DBA view from the drop down.  We are first going to confirm the NEW_PDB exists now in the Alpha01A-DBCS instance.  
-
-	![](images/SS-200/038.png)
-
--	Right click on the Connections in the DBA panel and add the Alpha01A-DBCS connection.
-
-	![](images/SS-200/039.png)
-
--	Expand the Container Database branch and confirm NEW_PDB exists.  Click on it - note that it is in mounted state.
-
-	![](images/SS-200/040.png)
-
--	Right click on NEW_PDB and select modify state, and then hit Apply.
-
-	![](images/SS-200/041.png)
-
-	![](images/SS-200/042.png)
-
-	![](images/SS-200/043.png)
-
--   Now right click the Alpha01A-DBCS connection and select properties.  We will edit this to create a new connection to the NEW_PDB PDB.  window to create a new connection; enter the following connection details and click Save
-	- **Connection Name**:	`Alpha01A-DBCS-NEW_PDB`
-	- **Username**:			`alpha`
-	- **Password**:			`ALpha2018__`
-	- **Check** "Save Password"
-	- **Optionally select a color for the connection**
-	- **ConnectionType**:		`SSH`
-	- **Port Forward:**		`Database (Alpha01A-DBCS)`
-	- **Service Name**:		`new_pdb.<Your ID Domain>.oraclecloud.internal`
-	
-	![](images/SS-200/050.png)
-
--   Click **Test** to confirm the information was entered correctly.
-
-	![](images/SS-200/051.png)
- 
--   Click **Connect** to save the connection information, expand the connection on the left, and then expand the tables to confirm the migration was successful.
-
-	![](images/SS-200/052.png)
-
-# Cloud Migration Using Data Pump: Schema Level
-
-## Export the Alpha Schema
-
-### **STEP 9**:  Create directory for datapump export
-
--	Create an Oracle directory (may already exist).
-	- `sqlplus alpha/Alpha2018_@pdb1`
-	- `create directory oracle as '/home/oracle';`
-	- `exit;`
-
-	![](images/SS-200/053.png)
-
-### **STEP 10**:  Run datapump export
-
--	Export the data.
-	- `expdp alpha/Alpha2018_@pdb1 directory=oracle dumpfile=alphaexp.dmp compression=all`
-
-	![](images/SS-200/054.png)
-
-### **STEP 11**:  Copy the export Data Pump file to the server
-
--   Use the following secure copy (**scp**) command to transfer the Data Pump export to the Alpha01A-DBCS instance.
-	- `scp -i /home/oracle/privateKey /home/oracle/alphaexp.dmp oracle@<Alpha01A-DBCS IP>:.`
-
-	![](images/SS-200/055.png)
-
-### **STEP 12**:  Create a new schema to hold a copy of the data
-
--	Open a new terminal window (or use the current one) and enter the following commands that will SSH to the Alpha01A-DBCS instance, create an Oracle directory, and import the data.
-	- `ssh -i /home/oracle/privateKey oracle@<Alpha01A-DBCS IP>` -- log into your remote DBCS instance
-	- `sqlplus system/Alpha2018_@pdb1;` -- log into system in the alphapdb
-	- `create user alpha2 identified by Alpha2018_;` -- create schema alpha2 (alpha already has the data from the previous lab)
-	- `grant dba to alpha2;`
-	- `connect alpha2/Alpha2018_@pdb1;` -- connect to alpha2 so we can create the oracle directory
-	- `create directory oracle as '/home/oracle';` -- this may already exist
-	- `exit`
-
-	![](images/SS-200/056.png)
-
-### **STEP 13**:  Import the data
-
--	Import the data from the alpha schema to the new alpha2 schema.  Run the following command in your terminal window.
-	- `impdp alpha2/Alpha2018_@pdb1 directory=oracle dumpfile=alphaexp.dmp remap_schema=alpha:alpha2`
-
-	![](images/SS-200/057.png)
-
-# Cloud Migration Using Data Pump: Tablespace Level
-
-While datapump provides a very fast multi-threaded technique to move data quickly between Oracle Databases, it was not designed for very large volumes of data.  Transportable Tablespaces enable a database file copy technique that does not require an exported copy of the data, but instead allow you to copy the in-place data files to target, which using Datapump to capture the metadata only.
-
-## Replicate Current Data to Archive Tablespace
-
-We will be creating a copy of the alpha schema and tablespace, and replicating that to a alpha_archive schema and tablespace.
-
--	Open a terminal window and execute the following:
-	- `/home/oracle/cr_tablespace.sh`
-
-	![](images/SS-200/058.png)
-
-### **STEP 14**:  Open alpha_archive tablespace in read only mode and export the metadata
+### **STEP 12**:  Open alpha_archive tablespace in read only mode and export the metadata
 
 -	Log into the database, put the alpha_archive tablespace in in read only mode, and export the tablespace metadata.
 	- `sqlplus system/Alpha2018_@pdb1`
@@ -296,7 +309,7 @@ We will be creating a copy of the alpha schema and tablespace, and replicating t
 
 	![](images/SS-200/059.png)
 
-### **STEP 15**:  Copy the datafiles to the target DBCS instance
+### **STEP 13**:  Copy the datafiles to the target DBCS instance
 
 -	In the terminal window enter the following:
 	- `scp -i /home/oracle/privateKey /home/oracle/alpha_archive_tbs.dmp oracle@<Alpha01A-DBCS IP>:.` -- metadata
@@ -304,7 +317,7 @@ We will be creating a copy of the alpha schema and tablespace, and replicating t
 
 	![](images/SS-200/060.png)
 
-### **STEP 16**:  Import the tablespace into the target DBCS instance
+### **STEP 14**:  Import the tablespace into the target DBCS instance
 
 We will be importing the data into the pdb1 instance.  We need to first create the alpha_archive user that owns the data.
 
@@ -336,7 +349,7 @@ Occasionally you just want to copy one or more tables from one database to anoth
 
 ## Create a Database Link
 
-### **STEP 17**:  Create Database Link on the local system
+### **STEP 15**:  Create Database Link on the local system
 
 -	Since we need to use tunnels to communicate with the remote DBCS instance when using ports other than 22 (which is open) we need to create a new tunnel for port 1521.  Open a new terminal window (be sure you are not SSH into the remote Alpha01A-DBCS instance - see terminal window heading).
 	- `ssh -o StrictHostKeyChecking=no -i /home/oracle/privateKey -L 1526:<Alpha01A-DBCS IP>:1521 opc@<Alpha01A-DBCS IP>`
