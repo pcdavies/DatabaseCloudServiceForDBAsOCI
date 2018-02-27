@@ -125,10 +125,8 @@ All Oracle DBCS Services are protected by Transparent Data Encryption (TDE) by d
 ```
 create database link ORCL.<host domain name>
 connect to system identified by ALpha2018__
-using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=<WorkshopImage IP>)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=<database unique name>.<host domain name>)))';
+using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=<database unique name>.<host domain name>)))';
 ```
-	![](images/SS-200/034.png)
-
 -	Test the link.  Enter the following.  Note that tunnels do tend to drop enventually over time.  If you get an error check that your tunnel is still up and in effect.
 	- `select sysdate from dual@orcl.<host domain name>;`
 
@@ -238,7 +236,7 @@ using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=<WorkshopImage IP>)(PORT=1521))
 
 	![](images/SS-200/056.png)
 
-### **STEP 10**:  Import the data
+### **STEP 11**:  Import the data
 
 -	Import the data from the alpha schema to the new alpha2 schema.  Run the following command in your terminal window.
 	- `impdp alpha2/ALpha2018__@pdb1 directory=tmp dumpfile=alphaexp.dmp remap_schema=alpha:alpha2`
@@ -258,46 +256,6 @@ We will be creating a copy of the alpha schema and tablespace, and replicating t
 	- `/home/oracle/cr_tablespace.sh`
 
 	![](images/SS-200/058.png)
-
-### **STEP 11**:  Export Encryption Keys from NEW_PDB
-
-All DBCS instances have both an auto open wallet and a password wallet.  When moving data the **password wallet** must move with the data.  To open the password wallet you must first remove the auto open wallet.
-
--	Review status of encryption wallet.  Open a terminal window (or use your existing open window) and enter the following.
-	- `. oraenv` (enter ORCL when prompted).
-	- `sqlplus sys/ALpha2018__ as sysdba`
-	- `select * from v$encryption_wallet;`
-
-	![](images/SS-200/014.png)
-
--	Shut down the database, remove the auto-open wallet, and start the database back up again.  We will be using the password wallet.  Enter the following commands in the open terminal window.
-	- `shutdown immediate;`
-	- `exit`
-	- `mv  /opt/oracle/dcs/commonstore/wallets/tde/<your database unique name for WorkshopImage>/cwallet.sso /opt/oracle/dcs/commonstore/wallets/tde/cwallet.sso`
-	- `sqlplus sys/ALpha2018__ as sysdba`
-	- `startup`
-	- `alter pluggable database all open;`
-
-	![](images/SS-200/015.png)
-
-	![](images/SS-200/016.png)
-
--	Review the status of the **password wallet**.  Enter the following.
-	- `select * from v$encryption_wallet;`
-
-	![](images/SS-200/017.png)
-
--	Note the password wallet is closed in the CDB.  We need to open the password keystore in the CDB, and also in the PDB(s).  Now that the auto open wallet has been removed opening and closing wallets and keystores is a manual process.
-	- `administer key management set keystore open identified by ALpha2018__ container=all;`
-	- `alter session set container=new_pdb;`
-	- `administer key management set keystore open force keystore identified by ALpha2018__;`
-
-	![](images/SS-200/027.png)
-
--	Now we can export the encryption keys to the pluggable database.  Enter the following commands. 
-	- `administer key management export encryption keys with secret "Alpha2018_" to '/home/oracle/new_pdb.p12' identified by ALpha2018__;`
-
-	![](images/SS-200/031.png)
 
 ### **STEP 12**:  Open alpha_archive tablespace in read only mode and export the metadata
 
@@ -349,8 +307,9 @@ All DBCS instances have both an auto open wallet and a password wallet.  When mo
 
 	![](images/SS-200/065.png)
 
--	Copy the dbf file into the PDB1 using ASMCMD.  Enter the following.
+-	Copy the dbf file into the PDB1 using ASMCMD.  Enter the following in asmcmd command shell.  You should be still SSH'd into Alpha01A-DBCS and logged in as oracle (sudo su - oracle) from the previous step.
 	- `chmod a+r /tmp/alpha_archive.<asm file version>`
+	- `asmcmd -a sysdba`
 	- `cp /tmp/alpha_archive.<version number> <your asm directory for pdb1>/alpha_archive`
 	- `ls <your asm directory>/datafile`
 
@@ -385,26 +344,37 @@ We will be importing the data into the pdb1 instance.  We need to first create t
 Occasionally you just want to copy one or more tables from one database to another, and the easiest/quickest way to do that is to use a database link.  A database link connects two databases with sqlnet allowing you to reference remote tables in your local database.  This is good for table data, but other object types such as stored procedures, etc. cannot be replicated as easily.
 
 ## Create a Database Link
+ 
+ Note this was done in step 4 above as part of the hot PDB migration to copy data FROM the WorkshopImage to Alpha01A-DBCS.  In that step you created a database link IN Alpha01A-DBCS that pointed back to WorkshopImage.  In this step we will create a link in WorkshopImage that points to Alpha01A-DBCS. 
 
-### **STEP 15**:  Create Database Link on the local system
+### **STEP 15**:  Create Database Link on the local system (WorkshopImage)
 
--	Since we need to use tunnels to communicate with the remote DBCS instance when using ports other than 22 (which is open) we need to create a new tunnel for port 1521.  Open a new terminal window (be sure you are not SSH into the remote Alpha01A-DBCS instance - see terminal window heading).
-	- `ssh -o StrictHostKeyChecking=no -i /home/oracle/privateKey -L 1526:<Alpha01A-DBCS IP>:1521 opc@<Alpha01A-DBCS IP>`
+-	Since we need to use tunnels to communicate with the remote DBCS instance when using ports other than 22 (which is open) we need to create a new tunnel for port 1521.  Open a new terminal window (be sure you are not SSH into the remote Alpha01A-DBCS instance - see terminal window heading).  We will tunnel on 1540 (1521 is already used, and 1530 may be used in SQL Developer).
+	- `ssh -o StrictHostKeyChecking=no -i /tmp/privateKey -L 1540:<Private IP of Alpha01A-DBCS>:1521 opc@<Public IP of Alpha01A-DBCS>`
 	- Minimize this window.
 
-	![](images/SS-200/064.png)
+	![](images/SS-200/070.png)
 
 -	Log into SQL Plus and create the database link.  Be sure to update this command with your Identity Domain.
-	- `sqlplus alpha/Alpha2018_@pdb1;`
-	- `create database link alpha_dbcs connect to alpha_archive identified by Alpha2018_ using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1526))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=pdb1.gse00011358.oraclecloud.internal)))';`
-	- `select sysdate from dual@alpha_dbcs;`
+	- `. oraenv`
+	- `sqlplus alpha/ALpha2018___@pdb1;`
 
-	![](images/SS-200/065.png)
+```
+create database link PDB1.<host domain name>
+connect to alpha identified by ALpha2018__
+using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhosts)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=<database unique name>.<host domain name>)))';
+```
+	- `select sysdate from dual@pdb1.<host domain name>;`
 
--	Query the REMOTE alpha_archive schema and list tables.  Then copy a table from the remote DBCS to the local instance.  Note that you cannot create a remote table (DDL operation) on the remote server but you can do an insert operation.  
+	![](images/SS-200/071.png)
+
+-	Query the REMOTE alpha_archive schema in Alpha01A-DBCS and list tables.  Then copy a table from the remote DBCS to the local instance.  Note that you cannot create a remote table (DDL operation) on the remote server but you can do an insert operation.  
 	- `select table_name from user_tables@alpha_dbcs;`
+
+	![](images/SS-200/072.png)
+
 	- `create table alpha_services_stats_archive as select * from alpha_services_stats@alpha_dbcs;`
 
-	![](images/SS-200/066.png)
+	![](images/SS-200/073.png)
 
 This lab shows how you can copy entire databases, tablespace datafiles, schemas, and individual tables between on-premise databases and cloud databases.  Depending on the use case one or more of these approaches may be applicable.
