@@ -142,3 +142,29 @@ SSHs are required when creating a new DBCS instance.  Later you can add addition
     - `exit`
 
 	![](images/SS-300/026.png)
+
+## Configure RMAN for Cloud Backup, Backup the Database, and Restore a Dropped Table
+
+### **STEP 6**: Configure Object Storage
+
+-	Select `Storage` - `Object Storage` in the menu.
+
+ 	![](images/SS-300/027.png)
+
+-	Create a new Bucket called `alpha` in the Demo Compartment (or the Compartment you have been assigned).
+
+ 	![](images/SS-300/028.png)
+
+ 	![](images/SS-300/029.png)
+
+-	Create a new user for the purposes of storing the backups.  Go to `Identity` menu and select `Users`.
+
+ 	![](images/SS-300/030.png)
+
+-	Create User called `demo.user`.
+
+ 	![](images/SS-300/031.png)
+
+ 	![](images/SS-300/032.png)
+	
+
