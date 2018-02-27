@@ -253,7 +253,8 @@ While datapump provides a very fast multi-threaded technique to move data quickl
 
 We will be creating a copy of the alpha schema and tablespace, and replicating that to a alpha_archive schema and tablespace.
 
--	Open a terminal window and execute the following:
+-	Open a new terminal window in the WorkshopImage Desktop and execute the following (ie the previous terminal window is connected to the Alpha01A-DBCS).:
+	- `. oraenv` (enter ORCL when prompted)
 	- `/home/oracle/cr_tablespace.sh`
 
 	![](images/SS-200/058.png)
@@ -296,52 +297,88 @@ All DBCS instances have both an auto open wallet and a password wallet.  When mo
 -	Now we can export the encryption keys to the pluggable database.  Enter the following commands. 
 	- `administer key management export encryption keys with secret "Alpha2018_" to '/home/oracle/new_pdb.p12' identified by ALpha2018__;`
 
-
 	![](images/SS-200/031.png)
 
 ### **STEP 12**:  Open alpha_archive tablespace in read only mode and export the metadata
 
 -	Log into the database, put the alpha_archive tablespace in in read only mode, and export the tablespace metadata.
-	- `sqlplus system/Alpha2018_@pdb1`
+	- `sqlplus system/ALpha2018__@pdb1`
 	- `alter tablespace alpha_archive read only;`
 	- `exit`
-	- `expdp system/Alpha2018_@pdb1 directory=oracle dumpfile=alpha_archive_tbs.dmp transport_tablespaces=alpha_archive exclude=statistics encryption_password=Alpha2018_ logfile=full_tts_export.log`
+	- `expdp system/ALpha2018__@pdb1 directory=oracle dumpfile=alpha_archive_tbs.dmp transport_tablespaces=alpha_archive exclude=statistics encryption_password=ALpha2018__ logfile=full_tts_export.log`
 
 	![](images/SS-200/059.png)
 
-### **STEP 13**:  Copy the datafiles to the target DBCS instance
 
--	In the terminal window enter the following:
-	- `scp -i /home/oracle/privateKey /home/oracle/alpha_archive_tbs.dmp oracle@<Alpha01A-DBCS IP>:.` -- metadata
-	- `scp -i /home/oracle/privateKey /u02/app/oracle/oradata/ORCL/PDB1/alpha_archive.dbf oracle@<Alpha01A-DBCS IP>:.` -- datafiles
+### **STEP 13**:  Copy the metadata to the target Alpha01A-DBCS instance
+
+-	Copy the alpha_\archive_tbs.dmp file.  In the terminal window enter the following:
+	- `scp -i /tmp/privateKey /home/oracle/alpha_archive_tbs.dmp opc@<Alpha01A-DBCS IP>:/tmp` -- metadata
 
 	![](images/SS-200/060.png)
 
-### **STEP 14**:  Import the tablespace into the target DBCS instance
+### **STEP 14**:  Copy the datafile to the target Alpha01A-DBCS instance
 
-We will be importing the data into the pdb1 instance.  We need to first create the alpha_archive user that owns the data.
-
--	SSH to the target DBCS instance, log in, and create euro user (must already exist in the target).
-	- `ssh -i /home/oracle/privateKey oracle@<Alpha01A-DBCS IP>`
-	- `sqlplus system/Alpha2018_@pdb1`
-	- `create user alpha_archive identified by Alpha2018_;`
-	- `grant dba to alpha_archive;`
-	- `exit`
+-	Since DBCS-OCI uses Automatic Storage Management (ASM) we need to locate the datafile in ASM first.  Go to SQL Developer to do that.  Open the DBA view and click on the PDB1 pluggable database in the Local Sys CDB connection.
 
 	![](images/SS-200/061.png)
 
--	Copy the alpha_archive.dbf datafile to the pdb1 directory and import the metadata (the data is already there in the dbf file).
-	- `cp /home/oracle/alpha_archive.dbf /u02/app/oracle/oradata/ORCL/PDB1`
-	- `impdp system/Alpha2018_@pdb1 directory=oracle dumpfile=alpha_archive_tbs.dmp logfile=full_tts_imp.log encryption_password=Alpha2018_ transport_datafiles='/u02/app/oracle/oradata/ORCL/PDB1/alpha_archive.dbf'`
+-	Open a new terminal window and start ASM CLI.  Enter the following:
+	- `. oraenv` enter ORCL when prompted
+	- `asmcmd -a sysdba`
+	- Enter the cp command to copy the data file to the tmp directory.  Select the alpha_archive datafile as show in the screenshot (your name/version will be different)
 
 	![](images/SS-200/062.png)
 
+-	Exit out of asmcmd and then SCP (copy) the dbf file to Alpha01A-DBCS.
+	- `exit`
+	- `scp -i /tmp/privateKey /tmp/alpha_archive.<your asm file version number> opc@<Alpha01A-DBCS IP>:/tmp`
+
+	![](images/SS-200/063.png)
+
+-	SSH into Alpha01A-DBCS and copy the dbf file to the pdb1 directory.
+	- `ssh -i /tmp/privateKey opc@<Alpha01A-DBCS IP>`
+	- `sudo su -`
+	- `chown oracle /tmp/alpha_archive`
+	- `chown oracle /tmp/alpha_archive_tbs.dmp`
+	- `exit`
+
+	![](images/SS-200/064.png)
+
+-	Return to SQL Developer and select the PDB1 pluggable database in Alpha01A-DBCS instance.
+
+	![](images/SS-200/065.png)
+
+-	Copy the dbf file into the PDB1 using ASMCMD.  Enter the following.
+	- `chmod a+r /tmp/alpha_archive.<asm file version>`
+	- `cp /tmp/alpha_archive.<version number> <your asm directory for pdb1>/alpha_archive`
+	- `ls <your asm directory>/datafile`
+
+	![](images/SS-200/066.png)
+
+### **STEP 15**:  Import the tablespace into the target DBCS instance
+
+We will be importing the data into the pdb1 instance.  We need to first create the alpha_archive user that owns the data.
+
+-	Using the same terminal window above that is SSH'd into Alpha01A-DBCS, log in, and create alpha_archive user (must already exist in the target).
+	- `sqlplus system/ALpha2018__@pdb1`
+	- `create user alpha_archive identified by ALpha2018__;`
+	- `grant dba to alpha_archive;`
+	- `exit`
+
+	![](images/SS-200/067.png)
+
+-	Import the metadata (the data is already there in the dbf file).
+	- `impdp system/ALpha2018__@pdb1 directory=tmp dumpfile=alpha_archive_tbs.dmp logfile=full_tts_imp.log encryption_password=ALpha2018__ transport_datafiles='<your asm directory>/alpha_archive'`
+
+	![](images/SS-200/068.png)
+
 -	Confirm tablespace and contents exist by querying the Oracle dictionary.  Log into sqlplus and run the following query.
-	- `sqlplus system/Alpha2018_@pdb1`
+	- `sqlplus system/ALpha2018__@pdb1`
 	- `select tablespace_name, count(*) from dba_tables where owner='ALPHA_ARCHIVE' group by tablespace_name;`
 	- `exit`
 - 
-	![](images/SS-200/063.png)
+	![](images/SS-200/069.png)
 
 # Cloud Migration Using Database Links (Table Level)
 
