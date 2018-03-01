@@ -58,7 +58,7 @@ We will use the bucket later.
 
   ![](images/SS-400/009.png)
 
-  - `compartment` -- return to Storage - Object Storage and select the alpha bucket
+  - `compartment-id` -- return to Storage - Object Storage and select the alpha bucket
 
   ![](images/SS-400/010.png)
 
@@ -88,139 +88,85 @@ We will use the bucket later.
 
   ![](images/SS-400/016.png)
 
+### **STEP 4**:  Upload the Public Key
 
-compartment-id = ocid1.compartment.oc1..aaaaaaaar632n4aqhiwjdozs6hdloootyzsofdryppxx4o3ltgue2clwpcva
-# generate a key as follows: openssl genrsa -out oci_api_key.pem 2048
-key_file       = oci_api_key.pem
-region         = us-ashburn-1
-tenancy        = ocid1.tenancy.oc1..aaaaaaaafytl3lyumzyvry3qlsjimwdfgzeb3hv7iax5hieikubonyfyfetq
-user           = ocid1.user.oc1..aaaaaaaa7puka3i3s6tfvzca26qsttzs2wjkttrt5kbdo5kjhjquzgfe3zva
-bucket_name    = alpha
-# get the fingerprint: https://docs.us-phoenix-1.oraclecloud.com/Content/API/Concepts/apisigningkey.htm#How3 
-fingerprint    = fa:49:8b:7d:ed:d7:bb:db:58:31:e7:ad:9a:8e:d7:6e
+- We need to upload the public key.  Go to Identity - Users.  Then click on the `api.user` user, and then click on `Add Public Key`.
 
-## Curl 'Get' Examples (all commands enter in a terminal window)
+  ![](images/SS-400/017.png)
 
-### **STEP 1**: Fetch a List of Access Rules
+  ![](images/SS-400/018.png)
 
--	Start by opening a gedit window where you can pasted and edit the commands.  Then enter the following curl command in the edit window on the compute image.  Edit this command and replace the Identity Domain and userid and password to reflect your environment.  The curl command will return a JSON formatted response providing security access rules.  Note that we are using a US data center (see the highlight below).  Many GSE instances are EMEA, in which case the URL would have an EM where the US is.  This holds for all the examples that follow.  
+  ![](images/SS-400/019.png)
 
-![](images/SS-400/001.png)
+- While the Add Public Key is open enter the following in the terminal window.  We will paste the key contents into this open window.
+  - `cat .oci/oci_api_key_public.pem`
 
-```
-curl -i -X GET \
--u "cloud.admin:<IDENTITY DOMAIN PASSWORD>" \
--H "X-ID-TENANT-NAME: <IDENTITY DOMAIN>" \
--H "Accept: application/json" \
-https://psm.us.oraclecloud.com/paas/api/v1.1/instancemgmt/<IDENTITY DOMAIN>/services/dbaas/instances/Alpha01A-DBCS/accessrules
-```
-![](images/SS-400/002.png)
+  ![](images/SS-400/020.png)
 
-### **STEP 2**: Fetch a List of All Instances
+- Highlight the key and right click to copy.  Then paste into the key window.
 
--	Enter the following in a terminal window on the compute image.  This will return a JSON formatted response providing a list of instances (not just database - all instances).
-```
-curl -i -X GET \
--u "cloud.admin:<IDENTITY DOMAIN PASSWORD>" \
--H "X-ID-TENANT-NAME: <IDENTITY DOMAIN>" \
--H "Accept: application/json"  \
-https://psm.us.oraclecloud.com/paas/service/dbcs/api/v1.1/instances/<IDENTITY DOMAIN>
-```
-![](images/SS-400/003.png)
+  ![](images/SS-400/021.png)
 
-### **STEP 3**: Fetch a List of All Image Files
+  ![](images/SS-400/022.png)
 
--	Enter the following in a terminal window on the compute image.  This will return a JSON formatted response providing a list of all image files.
-```
-curl -X GET \
--u "cloud.admin:<IDENTITY DOMAIN PASSWORD>" \
--H "X-ID-TENANT-NAME: <IDENTITY DOMAIN>" \
-https://us2.storage.oraclecloud.com/v1/Storage-<IDENTITY DOMAIN>/compute_images
-```
-![](images/SS-400/004.png)
+- Copy the fingerprint to your notepad.  We'll use this later. 
 
-### **STEP 4**: Fetch Details of DBCS Instance Alpha01A-DBCS
+  ![](images/SS-400/023.png)
 
--	Enter the following in a terminal window on the compute image.  This will return a JSON formatted response providing details of a particular instance (Alpha01A-DBCS in this case).
-```
-curl -i -X GET \
--u "cloud.admin:<IDENTITY DOMAIN PASSWORD>" \
--H "X-ID-TENANT-NAME: <IDENTITY DOMAIN>" \
--H "Accept: application/json" \
-https://psm.us.oraclecloud.com/paas/api/v1.1/instancemgmt/<IDENTITY DOMAIN>/services/dbaas/instances/Alpha01A-DBCS
-```
-![](images/SS-400/005.png)
+## Example CLI Requests
 
-### **STEP 5**: Isolate the IP Address of Alpha01A-DBCS in the example above using 
+### **STEP 5**: Retrieve Cloud Environment Objects
 
--	Enter the following in a terminal window on the compute image.  This will return a JSON formatted response providing the IP address particular instance (Alpha01A-DBCS in this case).
-```
-curl -i -X GET \
--u "cloud.admin:<IDENTITY DOMAIN PASSWORD>" \
--H "X-ID-TENANT-NAME: <IDENTITY DOMAIN>" \
--H "Accept: application/json" \
-https://psm.us.oraclecloud.com/paas/api/v1.1/instancemgmt/<IDENTITY DOMAIN>/services/dbaas/instances/Alpha01A-DBCS|sed -e 's/[{}]/''/g'|awk -v k="text" '{n=split($0,a,","); for (i=1; i<=n; i++) print a[i]}'|grep "ipAddress"|sed -n 1p
-```
-![](images/SS-400/006.png)
+-	List regions.  Enter the following in a command window.
+  - `oci iam region list` --output table
 
-## Curl 'Put' Examples (all commands enter in a terminal window)
+  ![](images/SS-400/024.png)
 
-### **STEP 6**: Create New Access Rule - Open Port 1523
+-	List compute images.
+  - `oci compute image list -c ocid1.compartment.oc1..aaaaaaaar632n4aqhiwjdozs6hdloootyzsofdryppxx4o3ltgue2clwpcva --output table --query "data [*].{ImageName:\"display-name\", OCID:id}"`
 
--	This creates a new access rule and enables it.
-```
-curl -i -X POST \
-  -u "cloud.admin:<IDENTITY DOMAIN PASSWORD>" \
-  -H "X-ID-TENANT-NAME: <IDENTITY DOMAIN>" \
-  -d '{"ruleName":"open1523","ruleType":"USER","description":"","source":"PUBLIC-INTERNET","destination":"DB_1","ports":"1523","protocol":"tcp","status":"enabled"}' \
-  -H "Accept: application/json" \
-  -H "Content-Type: application/json" \
-https://psm.us.oraclecloud.com/paas/api/v1.1/instancemgmt/<IDENTITY DOMAIN>/services/dbaas/instances/Alpha01A-DBCS/accessrules 
-```
-![](images/SS-400/007.png)
+  ![](images/SS-400/025.png
 
-- Optionally - bring up the DBCS Console and confirm the rule was added.
+### **STEP 6**: Retrieve Database Related Information and Create a New VCN
 
-![](images/SS-400/008.png)
+- When installing the CLI tool a config file was generated and you enter some information in the prompts.  This information can be entered in the command line as parameters, but this can become lengthy.  Note that the install created a `.oci` (hidden) directory in the user's home directory.  Review the contents - enter the following. We will be make more CLI requests that will have additional parameters.  These parameters can be added to the config file to save typing in the future.
+  - `ls -l .oci`
+  - `cat .oci/config`
 
-![](images/SS-400/009.png)
+  ![](images/SS-400/026.png
 
-### **STEP 7**: Create New DBCS Instance EXAMPLE
+- Besides reading the CLI reference documentation, an additional tip is to use the -h (or --help) parameter.  To see this enter the following:
+  - `oci db database -h` -- you can scroll down, and then hit q to exit
+  - `oci db database list -h -- enter q to quit
 
--	This creates a new DBCS Instance.  This is only an example.  We will not do this as you may be over quota, and it can take over 30 minutes to provision.
-```
----------- create instance ---------- 
-curl -X POST \
--u "cloud.admin:<IDENTITY DOMAIN PASSWORD>" \
--H "X-ID-TENANT-NAME: <IDENTITY DOMAIN>" \
--H "Content-Type:application/json" \
--H "Accept: application/json" \
--d @createrequestbody.json \ -- this references the file below
-https://dbaas.oraclecloud.com/paas/service/dbcs/api/v1.1/instances/<IDENTITY DOMAIN>
+  ![](images/SS-400/027.png
 
----------- createrequestbody.json ---------- 
-{
-  "description": "Example service instance",
-  "edition": "EE_HP",
-  "level": "PAAS",
-  "serviceName": "orcl2",
-  "shape": "oc3",
-  "subscriptionType": "HOURLY",
-  "version": "12.1.0.2",
-  "vmPublicKeyText": "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAjjVf7hUGWOjWa1bcPSJ1uA9Tu3rYJ/9OkmtUzPiLSv6bKs2RjxnH6l80cfZibWned7wlqZeEA1iMWza+E8nMk/0sMkO+f9HpkTCc/N4wD7nFmLiAmhivWnS2HFj4oiNPdmBM4tFhSsfEextTSRKOlIZG0m9aIAOUh7e6Tf1/XS+MTLyUYwNGkNWHtAH03J3sVf3AaJ+SxS8YyVz5SY0VnJTWRqKs5nrLfLuJEsrBZdme4RYowIqxUlYWpkaf/RjFk2kIvIN1sEQHmMe+RTZmCvaDaOmOKlLOg9pmUN7Ybra3r7BnVbr1FuAJBjFj45XisY5lmhJCNZNFl79GJ8H8hw== rsa-key-20160415",
-  "parameters": [
-    {
-      "type": "db",
-      "usableStorage": "15",
-      "adminPassword": "Welcome_1",
-      "sid": "orcl",
-      "pdbName": "pdb1",
-      "failoverDatabase": "no",
-      "backupDestination": "BOTH",
-      "cloudStorageContainer": "Storage-<IDENTITY DOMAIN>\/Alpha01A_DBCS_SC",
-      "cloudStorageUser": "cloud.admin",
-      "cloudStoragePwd": "<IDENTITY DOMAIN PASSWORD>"
-    }
-  ]
-}
-```
+  ![](images/SS-400/028.png
+
+- To list databases (within database services) we'll need the db-system-id.  Go to the cloud console to get that.  Select the Alpha01A-DBCS system, and then select the OCID:
+
+  ![](images/SS-400/029.png
+
+  ![](images/SS-400/030.png
+
+- Then go back to the terminal window and enter the following:
+  - `oci db database list --compartment-id <copy your compartment-id from above> --db-system-id <paste the OCID here>`
+
+  ![](images/SS-400/031.png
+
+- List Virtual Cloud Networks. 
+  - `oci network vcn list -c <copy your compartment-id here>` -- note that -c is a shortcut for --compartment-id
+
+  ![](images/SS-400/032.png
+
+- Create a new VCN.  First review our current VCN (menu Network - Virtual Cloud Network).
+
+  ![](images/SS-400/033.png
+
+- Create a new VNC.  Note you will need to supply an additional parameter - cidr-block.  We can copy that from the previous command.
+
+  ![](images/SS-400/034.png
+
+- Go back to the Cloud Console and confirm the VCN was created.
+
+  ![](images/SS-400/035.png
