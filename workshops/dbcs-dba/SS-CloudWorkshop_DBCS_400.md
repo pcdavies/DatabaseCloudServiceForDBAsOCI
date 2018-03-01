@@ -1,24 +1,103 @@
-![](images/SS-400/image1.png)
+![](images/SS-400/001.png)
 
-Update: January 29, 2018
+Update: March 1, 2018
 
 ## Introduction
 
-In this Lab you will use curl commands to retrieve information about the configuration and status of various cloud services without the need to use the Cloud Console.  Note you may wish to open a separate text window with your identity domain account and password to copy/paste these into the placeholders in the following commands, and then copy this into the terminal windows.
+In this Lab you will use the Oracle Command Line Interface (CLI) to retrieve information about the configuration and status of various cloud services without the need to use the Cloud Console.  Note you may wish to open a separate text window with your identity domain account and password to copy/paste these into the placeholders in the following commands, and then copy this into the terminal windows.
 
 This lab supports the following use cases:
--	Programatic control of cloud databases.
+-	Use of Oracle's API to manage cloud databases.
 
 Please direct comments to: Derrick Cameron (derrick.cameron@oracle.com)
 
 ## Objectives
 
--   Use curl commands to request information about DBCS related configuration and services.
--   Create services with curl commands.
+- Install Oracle CLI
+- Use oci commands to request information about DBCS related configuration and services.
+- Create services with oci commands.
 
 ## Required Artifacts
 
--   There are now dependencies for this lab.
+-   There are no dependencies for this lab.
+
+## Create an Object Store Bucket and Install Oracle CLI.
+
+### **STEP 1**:  Create an Object Store Bucket
+
+- To create an object store bucket go to the cloud console and select Database (OCI).
+
+  ![](images/SS-400/002.png)
+
+  ![](images/SS-400/003.png)
+
+- Select Storage - Object Storage and select the Demo Compartment (or your working compartment).
+
+  ![](images/SS-400/004.png)
+
+  ![](images/SS-400/005.png)
+
+- Select `Create Bucket`.
+
+  ![](images/SS-400/006.png)
+
+- Call the Bucket `alpha`.  Accept the defaults.
+
+  ![](images/SS-400/007.png)
+
+We will use the bucket later.
+
+### **STEP 2**:  Collect Keys for use by the Oracle CLI in Step 3
+
+- The following keys will be needed.  Open a notepad and save these for the configuration in step 3:
+  - `tenancy` -- select tenancy and then copy OCID
+
+  ![](images/SS-400/008.png)
+
+  - `region`
+
+  ![](images/SS-400/009.png)
+
+  - `compartment` -- return to Storage - Object Storage and select the alpha bucket
+
+  ![](images/SS-400/010.png)
+
+### **STEP 3**:  Install Oracle CLI
+
+- We need to use the opc user for the following steps.  Open a terminal window and enter the following.  
+  - `ssh -i /tmp/privateKey opc@localhost` -- log into the WorkshopImage as opc
+  - `sudo yum install gcc libffi-devel python-devel openssl-devel` -- enter Y to all prompts
+
+  ![](images/SS-400/011.png)
+
+  ![](images/SS-400/012.png)
+
+- Now install the CLI.  Enter the following.  This will take a few minutes.
+  - `bash -c "$(curl -L https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh)"` -- accept the defaults (Y)
+
+  ![](images/SS-400/013.png)
+
+  ![](images/SS-400/014.png)
+
+- Configure CLI.  Enter the following:
+  - `oci setup config` -- take the defaults
+
+  ![](images/SS-400/015.png)
+
+- Respond to prompts with the OCIDs you copied in the previous step.  Accept Y to generate a new RSA key pair and accept location defaults.
+
+  ![](images/SS-400/016.png)
+
+
+compartment-id = ocid1.compartment.oc1..aaaaaaaar632n4aqhiwjdozs6hdloootyzsofdryppxx4o3ltgue2clwpcva
+# generate a key as follows: openssl genrsa -out oci_api_key.pem 2048
+key_file       = oci_api_key.pem
+region         = us-ashburn-1
+tenancy        = ocid1.tenancy.oc1..aaaaaaaafytl3lyumzyvry3qlsjimwdfgzeb3hv7iax5hieikubonyfyfetq
+user           = ocid1.user.oc1..aaaaaaaa7puka3i3s6tfvzca26qsttzs2wjkttrt5kbdo5kjhjquzgfe3zva
+bucket_name    = alpha
+# get the fingerprint: https://docs.us-phoenix-1.oraclecloud.com/Content/API/Concepts/apisigningkey.htm#How3 
+fingerprint    = fa:49:8b:7d:ed:d7:bb:db:58:31:e7:ad:9a:8e:d7:6e
 
 ## Curl 'Get' Examples (all commands enter in a terminal window)
 

@@ -125,7 +125,7 @@ All Oracle DBCS Services are protected by Transparent Data Encryption (TDE) by d
 ```
 create database link ORCL.<host domain name>
 connect to system identified by ALpha2018__
-using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=<database unique name>.<host domain name>)))';
+using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1530))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=<database unique name>.<host domain name>)))';
 ```
 -	Test the link.  Enter the following.  Note that tunnels do tend to drop enventually over time.  If you get an error check that your tunnel is still up and in effect.
 	- `select sysdate from dual@orcl.<host domain name>;`
@@ -362,7 +362,7 @@ Occasionally you just want to copy one or more tables from one database to anoth
 ```
 create database link PDB1.<host domain name>
 connect to alpha identified by ALpha2018__
-using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhosts)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=<database unique name>.<host domain name>)))';
+using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1540))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=<database unique name>.<host domain name>)))';
 ```
 	- `select sysdate from dual@pdb1.<host domain name>;`
 
