@@ -49,8 +49,8 @@
             {
                 "number": "400",
                 "filename": "SG-CloudWorkshop_DBCS_400.md",
-                "title": "Lab 400: CLI/Curl Commands (Programatic Control of Services)",
-                "description": "Review 'get' and 'put' curl commands to monitor and control DBCS cloud services",
+                "title": "Lab 400: Using the Oracle Command Line Interface (CLI) to manage DBCS Instances",
+                "description": "Install and configure Oracle CLI, and perform various DBA tasks with CLI",
                 "labels": {"version": "Self-Guided"}
             }
         ]
