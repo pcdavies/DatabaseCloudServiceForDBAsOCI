@@ -157,14 +157,108 @@ SSHs are required when creating a new DBCS instance.  Later you can add addition
 
  	![](images/SG-300/029.png)
 
--	Create a new user for the purposes of storing the backups.  Go to `Identity` menu and select `Users`.
+### **STEP 7**:  Remove Auto Open Wallet
 
- 	![](images/SG-300/030.png)
+All DBCS instances have both an auto open wallet and a password wallet.  When using RMAN to backup data the **password wallet** must open to decrypt the data.  **Note: once your remove the auto open wallet you must open the wallets in the CDB and PDBs each and every time you restart the database (easy to forget).**
 
--	Create User called `demo.user`.
+-	Review status of encryption wallet.  Open a terminal window (or use your existing open window) and enter the following.
+	- `. oraenv` (enter ORCL when prompted).
+	- `sqlplus sys/ALpha2018__ as sysdba`
+	- `select * from v$encryption_wallet;`
 
- 	![](images/SG-300/031.png)
+	![](images/SG-300/030.png)
 
- 	![](images/SG-300/032.png)
-	
+-	Shut down the database, remove the auto-open wallet, and start the database back up again.  We will be using the password wallet.  Enter the following commands in the open terminal window.
+	- `shutdown immediate;`
+	- `exit`
+	- `mv  /opt/oracle/dcs/commonstore/wallets/tde/<your database unique name for WorkshopImage>/cwallet.sso /opt/oracle/dcs/commonstore/wallets/tde/cwallet.sso`
+	- `sqlplus sys/ALpha2018__ as sysdba`
+	- `startup`
+	- `alter pluggable database all open;`
 
+	![](images/SG-300/031.png)
+
+	![](images/SG-300/032.png)
+
+-	Review the status of the **password wallet**.  Enter the following.
+	- `select * from v$encryption_wallet;`
+
+	![](images/SG-300/033.png)
+
+-	Note the password wallet is closed in the CDB.  We need to open the password keystore in the CDB, and also in the PDB(s).  Now that the auto open wallet has been removed opening and closing wallets and keystores is a manual process.  Note that you open the CDB and pluggable database wallets, and then separately open the seed database wallet (necessary).
+	- `administer key management set keystore open identified by ALpha2018__ container=all;`
+	- `alter session set container=pdb$seed;`
+	- `administer key management set keystore open force keystore identified by ALpha2018__;`
+	- `alter session set container=pdb1;`
+	- `select * from v$encryption_wallet;`
+	- `exit;`
+
+	![](images/SG-300/034.png)
+
+### **STEP 8**:  Back up the Database
+
+-	Log into RMAN and backup the database.  We will leave the RMAN default values.  Enter the following.
+	- `rman target /`
+	- `show all;`
+	- `set encryption on;`
+	- `alter system archive log current;`
+	- `backup database plus archivelog;`
+
+	![](images/SG-300/035.png)
+
+	![](images/SG-300/036.png)
+
+-	List/confirm backup and create restore point.  Enter the following
+	- `list backup summary;`
+	- `create restore point gold preserve;`
+
+	![](images/SG-300/037.png)
+
+### **STEP 9**:  Drop a Table 'Accidently'
+
+-	Exit from RMAN and log into alpha and drop table .  Enter the following.
+	- `exit;`
+	- `sqlplus alpha/ALpha2018__@pdb1;`
+	- `select table_name from user_tables;`
+	- `drop table order_items;`
+	- `exit;`
+
+	![](images/SG-300/038.png)
+
+### **STEP 10**:  Recover Database
+
+-	Restart the Database in mount mode and open the password key.
+	- `sqlplus sys/ALpha2018__ as sysdba`
+	- `shutdown immediate;`
+	- `startup mount;`
+	- `administer key management set keystore open identified by ALpha2018__ container=all;`
+	- `exit;`
+
+	![](images/SG-300/039.png)
+
+-	Log into RMAN and restore the database.
+	- `rman target /`
+	- `set decryption identified by ALpha2018__;`
+	- `run {restore database; recover database to restore point gold; alter database open resetlogs;}`
+	- `exit;`
+
+	![](images/SG-300/040.png)
+
+### **STEP 11**:  Confirm Data Recovery
+
+-	Log into sys and open pluggable databases and password wallet.
+	- `sqlplus sys/ALpha2018__ as sysdba;`
+	- `alter pluggable database all open;`
+	- `alter session set container=pdb1;`
+	- `administer key management set keystore open force keystore identified by ALpha2018__;`
+
+	![](images/SG-300/041.png)
+
+-	Connect as alpha and confirm order_items table is restored.
+	- `connect alpha/ALpha2018__@pdb1;`
+	- `select count(*) from order_items;`
+	- `exit;`
+
+	![](images/SG-300/042.png)
+
+This concludes lab 300.  You can now move on to lab 400.

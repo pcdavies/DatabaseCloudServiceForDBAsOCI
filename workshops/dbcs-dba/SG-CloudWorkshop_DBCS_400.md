@@ -123,9 +123,9 @@ We will use the bucket later.
   ![](images/SG-400/024.png)
 
 -	List compute images.
-  - `oci compute image list -c ocid1.compartment.oc1..aaaaaaaar632n4aqhiwjdozs6hdloootyzsofdryppxx4o3ltgue2clwpcva --output table --query "data [*].{ImageName:\"display-name\", OCID:id}"`
+  - `oci compute image list -c <compartment-id> --output table --query "data [*].{ImageName:\"display-name\", OCID:id}"`
 
-  ![](images/SG-400/025.png
+  ![](images/SG-400/025.png)
 
 ### **STEP 6**: Retrieve Database Related Information and Create a New VCN
 
@@ -133,39 +133,39 @@ We will use the bucket later.
   - `ls -l .oci`
   - `cat .oci/config`
 
-  ![](images/SG-400/026.png
+  ![](images/SG-400/026.png)
 
 - Besides reading the CLI reference documentation, an additional tip is to use the -h (or --help) parameter.  To see this enter the following:
   - `oci db database -h` -- you can scroll down, and then hit q to exit
   - `oci db database list -h -- enter q to quit
 
-  ![](images/SG-400/027.png
+  ![](images/SG-400/027.png)
 
-  ![](images/SG-400/028.png
+  ![](images/SG-400/028.png)
 
 - To list databases (within database services) we'll need the db-system-id.  Go to the cloud console to get that.  Select the Alpha01A-DBCS system, and then select the OCID:
 
-  ![](images/SG-400/029.png
+  ![](images/SG-400/029.png)
 
-  ![](images/SG-400/030.png
+  ![](images/SG-400/030.png)
 
 - Then go back to the terminal window and enter the following:
   - `oci db database list --compartment-id <copy your compartment-id from above> --db-system-id <paste the OCID here>`
 
-  ![](images/SG-400/031.png
+  ![](images/SG-400/031.png)
 
 - List Virtual Cloud Networks. 
   - `oci network vcn list -c <copy your compartment-id here>` -- note that -c is a shortcut for --compartment-id
 
-  ![](images/SG-400/032.png
+  ![](images/SG-400/032.png)
 
 - Create a new VCN.  First review our current VCN (menu Network - Virtual Cloud Network).
 
-  ![](images/SG-400/033.png
+  ![](images/SG-400/033.png)
 
 - Create a new VNC.  Note you will need to supply an additional parameter - cidr-block.  We can copy that from the previous command.
 
-  ![](images/SG-400/034.png
+  ![](images/SG-400/034.png)
 
 - Go back to the Cloud Console and confirm the VCN was created.
 
@@ -182,8 +182,8 @@ We will use the bucket later.
 - Upload alpha.dmp to object storage.  We can multi-thread the upload.
   - `oci os object put -ns gse00014445 -bn alpha --file /tmp/alpha.dmp --name alpha.dmp --part-size 10 --parallel-upload-count 10 --bucket-name=alpha`
 
-  ![](images/SG-400/036.png
+  ![](images/SG-400/036.png)
 
 - Confirm the file was uploaded.  Navigate to Object Storage and review the alpha bucket (menu Storage - Object Storage).
 
-  ![](images/SG-400/037.png
+  ![](images/SG-400/037.png)
