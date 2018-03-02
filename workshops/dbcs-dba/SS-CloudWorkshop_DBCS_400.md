@@ -170,3 +170,20 @@ We will use the bucket later.
 - Go back to the Cloud Console and confirm the VCN was created.
 
   ![](images/SS-400/035.png
+
+### **STEP 7**: Upload Files to Object Storage
+
+- Change permissions of alpha.dmp file in /home/oracle so opc can read and upload it
+  - `sudo su - oracle`
+  - `chmod a+r alpha.dmp`
+  - `cp alpha.dmp /tmp`
+  - `exit`
+
+- Upload alpha.dmp to object storage.  We can multi-thread the upload.
+  - `oci os object put -ns gse00014445 -bn alpha --file /tmp/alpha.dmp --name alpha.dmp --part-size 10 --parallel-upload-count 10 --bucket-name=alpha`
+
+  ![](images/SS-400/036.png
+
+- Confirm the file was uploaded.  Navigate to Object Storage and review the alpha bucket (menu Storage - Object Storage).
+
+  ![](images/SS-400/037.png
