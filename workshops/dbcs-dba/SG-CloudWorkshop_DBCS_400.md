@@ -14,7 +14,7 @@ Please direct comments to: Derrick Cameron (derrick.cameron@oracle.com)
 ## Objectives
 
 - Install Oracle CLI
-- Use oci commands to request information about DBCS related configuration and services.
+- Use OCI commands to request information about DBCS related configuration and services.
 - Create services with oci commands.
 
 ## Required Artifacts

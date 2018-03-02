@@ -24,13 +24,12 @@ Welcome to the Oracle Database Cloud Service Workshop. This particular version i
 
 ### Objectives
 
--   Configure archive logging
--	Configure Transparent Data Encryption (TDE - required to restore from backup to the cloud)
--	Backup your local database to the Oracle Cloud
--	Drop a table and then restore it from your cloud backup.
--	Create Database Cloud Service from your on-premise backup 
--   SSH configuration
--   Explore VM and consoles
+-	Familiarize yourself with the Oracle Cloud Infrastructure.
+-	Backup your local database to the Oracle Cloud.
+-	Create a Virtual Cloud Network (VCN).
+-	Create Database Cloud Service.
+-   SSH configuration.
+-   Explore VM and consoles.
 
 ## Lab 200: Data Migration
 
@@ -38,9 +37,10 @@ Welcome to the Oracle Database Cloud Service Workshop. This particular version i
 
 ### Objectives
 
--   Clone, unplug, transfer and plug the AlphaPDB pluggable database using SQL Developer.
--   Export and import a schema using SQL Developer to execute Oracle Data Pump jobs.
--   Export and import a small collection of tables using SQL Developer.
+-   Hot clone a pluggable database from on-premise to the Cloud.
+-   Migrate a schema using Oracle Data Pump.
+-   Migrate data using a Transportable Tablespace.
+-   Copy data using Database Links.
 
 ## Lab 300: Common DBA Tasks
 
@@ -48,10 +48,10 @@ Welcome to the Oracle Database Cloud Service Workshop. This particular version i
 
 ### Objectives
 
--   Create an instance.
 -   Maintain security access.
 -   Scale up an instance.
 -   Add a SSH Key.
+-   Recover a dropped table.
 
 
 ## Lab 400:  CLI/Curl Commands (Programatic Control of Services)
@@ -60,5 +60,6 @@ Welcome to the Oracle Database Cloud Service Workshop. This particular version i
 
 ### Objectives
 
--   Request information about DBCS related configuration and services.
--   Create services with curl commands.
+- Install Oracle CLI
+- Use OCI commands to request information about DBCS related configuration and services.
+- Create services with oci commands.

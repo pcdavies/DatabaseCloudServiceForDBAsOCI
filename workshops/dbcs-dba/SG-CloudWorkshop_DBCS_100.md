@@ -15,6 +15,7 @@ Note that if you performed the setup steps for this and the following labs some 
 - To log issues and view the Lab Guide source, go to the [github oracle](https://github.com/oracle/learning-library/tree/master/workshops/dbcs-dba-oci) repository.
 
 ## Objectives
+
 -	Familiarize yourself with the Oracle Cloud Infrastructure.
 -	Backup your local database to the Oracle Cloud.
 -	Create a Virtual Cloud Network (VCN).
