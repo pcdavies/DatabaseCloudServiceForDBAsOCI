@@ -1,4 +1,4 @@
-![](images/SS-200/001.png)
+![](images/SG-200/001.png)
 
 Update February 23, 2018
 
@@ -34,27 +34,27 @@ This lab supports the following use cases:
 
 -   From the VNC Session desktop, locate and double-click on the **SQL Developer** icon. ***NOTE***: The first time SQL Developer is brought up; it may take some time to instantiate.
 
-	![](images/SS-200/002.png)
+	![](images/SG-200/002.png)
 
 -   Select the **View** -> **DBA** menu option from the top dropdown menu.
 
-	![](images/SS-200/003.png)
+	![](images/SG-200/003.png)
 
 -   On the DBA tab, click the green plus icon to create a new connection.
 
 	**Note**: you may also right-click on Connections and select Add Connection.
 
-	![](images/SS-200/004.png)
+	![](images/SG-200/004.png)
 
 -   Select the **Local Sys CDB** connection and click **OK**. 
 
 	**Note: Local Sys CDB** is our simulated “on-premises” database in the WorkshopImage Instance.  You will be prompted for a password - use `Alpha2018_`.
 
-	![](images/SS-200/005.png)
+	![](images/SG-200/005.png)
 
 -   Expand the **Local Sys CDB connect**, and then expand the **Container Database** tree item. Click on the **PDB1** pluggable database to show the details for the pluggable database.
 
-	![](images/SS-200/006.png)
+	![](images/SG-200/006.png)
 
 ## Clone the On-premise PDB1
 
@@ -62,28 +62,28 @@ This lab supports the following use cases:
 
 -   In the DBA Navigator panel, right click on the PDB1 pluggable database and select the Clone PDB... menu option.
 
-	![](images/SS-200/007.png)
+	![](images/SG-200/007.png)
 
 -	Enter the following
 	- **Database Name:** `NEW_PDB`
 	- Then select the SQL table above.  Since we have implemented TDE (Transparent Data Encryption) we need to override the SQL.
 
-	![](images/SS-200/008.png)
+	![](images/SG-200/008.png)
 
 -	Select the SQL tab above and enter the following
 	- `keystore identified by ALpha2018__`
 
-	![](images/SS-200/009.png)
+	![](images/SG-200/009.png)
 
-	![](images/SS-200/010.png)
+	![](images/SG-200/010.png)
 
 -	Click on the NEW\_PDB database in the DBA navigator to see the status of the database.  Note: The cloned database shows an OPEN_MODE of MOUNTED indicating the database is plugged-in but is not open for access.
 
-	![](images/SS-200/011.png)
+	![](images/SG-200/011.png)
 
 -	Click on the Data Files tab for the ALPHACLONE to review the data files created during the cloning operation.  Note that DBCS on OCI is using Automatic Storage Management (ASM).  
 
-	![](images/SS-200/012.png)
+	![](images/SG-200/012.png)
 
 ## Clone the NEW_PDB DB to the Cloud
 
@@ -94,17 +94,17 @@ All Oracle DBCS Services are protected by Transparent Data Encryption (TDE) by d
 -	Enter the following in a terminal window.
 	- `chmod 755 /opt/oracle/dcs/commonstore/wallets/tde/<your database unique name for WorkshopImage>`
 
-	![](images/SS-200/013.png)
+	![](images/SG-200/013.png)
 
 -	Update the sqlnet.ora file.  First review the file.  It specifies the wallet directory location.  This needs to be updated to replace the `$ORACLE_UNQNAME` variable with your database unique name (literal rather than variable).
 	- ` cat /u01/app/oracle/product/12.2.0.1/dbhome_1/network/admin/sqlnet.ora`
 
-	![](images/SS-200/013.1.png)
+	![](images/SG-200/013.1.png)
 
 -	Update it with the following command.  Be sure to specify the name of the database noted earlier (you should have written this down).  You are replacing $ORACLE_UNQNAME with your own ORCL_iad... name.
 	- `sed -i 's/$ORACLE_UNQNAME/<your database unique name for WorkshopImage>/g' /u01/app/oracle/product/12.2.0.1/dbhome_1/network/admin/sqlnet.ora`
 
-	![](images/SS-200/013.2.png)
+	![](images/SG-200/013.2.png)
 
 ### **STEP 4**:  Clone NEW_PDB in WorkshopImage to Alpha01A-DBCS
 
@@ -114,11 +114,11 @@ All Oracle DBCS Services are protected by Transparent Data Encryption (TDE) by d
 	- `ssh -o StrictHostKeyChecking=no -i privateKey -L 1530:<Private IP of WorkshopImage>:1521 opc@<WorkshopImage IP>`
 	- Minimize this window but do not close it.
 
-	![](images/SS-200/031.1.png)
+	![](images/SG-200/031.1.png)
 
 -	Next open SQL Developer and then open the Alpha01A-DBCS connection. 
 
-	![](images/SS-200/032.png)
+	![](images/SG-200/032.png)
 
 -	Create a database link in Alpha01A-DBCS that points back to the WorkshopImage.  Note the database link name must match the source database and hostname.  Enter the following.
 
@@ -130,38 +130,38 @@ using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1530))(CONNECT_
 -	Test the link.  Enter the following.  Note that tunnels do tend to drop enventually over time.  If you get an error check that your tunnel is still up and in effect.
 	- `select sysdate from dual@orcl.<host domain name>;`
 
-	![](images/SS-200/035.png)
+	![](images/SG-200/035.png)
 
 -	Reestablish tunnel if necessary.
 
-	![](images/SS-200/036.png)
+	![](images/SG-200/036.png)
 
 -	Clone the NEW_PDB.  Enter the following in SQL Developer.  This will take several minutes.
 	- `create pluggable database new_pdb FROM new_pdb@orcl.<host domain name> keystore identified by ALpha2018__;`
 
-	![](images/SS-200/037.png)
+	![](images/SG-200/037.png)
 
 ### **STEP 5**:  Create a SQL Developer connection to the Public Cloud database ALPHAPDB schema
 
 -	Back in SQL Developer select the DBA view from the drop down.  We are first going to confirm the NEW_PDB exists now in the Alpha01A-DBCS instance.  
 
-	![](images/SS-200/038.png)
+	![](images/SG-200/038.png)
 
 -	Right click on the Connections in the DBA panel and add the Alpha01A-DBCS connection.
 
-	![](images/SS-200/039.png)
+	![](images/SG-200/039.png)
 
 -	Expand the Container Database branch and confirm NEW_PDB exists.  Click on it - note that it is in mounted state.
 
-	![](images/SS-200/040.png)
+	![](images/SG-200/040.png)
 
 -	Right click on NEW_PDB and select modify state, and then hit Apply.
 
-	![](images/SS-200/041.png)
+	![](images/SG-200/041.png)
 
-	![](images/SS-200/042.png)
+	![](images/SG-200/042.png)
 
-	![](images/SS-200/043.png)
+	![](images/SG-200/043.png)
 
 -   Now right click the Alpha01A-DBCS connection and select properties.  We will edit this to create a new connection to the NEW_PDB PDB.  window to create a new connection; enter the following connection details and click Save and then test to confirm the information was entered correctly.
 	- **Connection Name**:	`Alpha01A-DBCS-NEW_PDB`
@@ -174,11 +174,11 @@ using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1530))(CONNECT_
 	- **Port Forward:**		`Database (Alpha01A-DBCS)`
 	- **Service Name**:		`new_pdb.<Your ID Domain>.oraclecloud.internal`
 	
-	![](images/SS-200/050.png)
+	![](images/SG-200/050.png)
 
 -   Click **Connect** to save the connection information, expand the connection on the left, and then expand the tables to confirm the migration was successful.
 
-	![](images/SS-200/051.png)
+	![](images/SG-200/051.png)
 
 # Cloud Migration Using Data Pump: Schema Level
 
@@ -192,21 +192,21 @@ using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1530))(CONNECT_
 	- `create directory oracle as '/home/oracle';`
 	- `exit;`
 
-	![](images/SS-200/053.png)
+	![](images/SG-200/053.png)
 
 ### **STEP 7**:  Run datapump export
 
 -	Export the data.
 	- `expdp alpha/ALpha2018__@pdb1 directory=oracle dumpfile=alphaexp.dmp compression=all`
 
-	![](images/SS-200/054.png)
+	![](images/SG-200/054.png)
 
 ### **STEP 8**:  Copy the export Data Pump file to the server
 
 -   Use the following secure copy (**scp**) command to transfer the Data Pump export to the Alpha01A-DBCS instance.
 	- `scp -i /tmp/privateKey /home/oracle/alphaexp.dmp opc@<Alpha01A-DBCS IP>:.`
 
-	![](images/SS-200/055.png)
+	![](images/SG-200/055.png)
 
 ### **STEP 9**:  Log into Alpha01A-DBCS and Update the sqlnet.ora file to add the pdb1 connection.
 
@@ -234,14 +234,14 @@ using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1530))(CONNECT_
 	- `create directory tmp as '/tmp';` -- this may already exist
 	- `exit`
 
-	![](images/SS-200/056.png)
+	![](images/SG-200/056.png)
 
 ### **STEP 11**:  Import the data
 
 -	Import the data from the alpha schema to the new alpha2 schema.  Run the following command in your terminal window.
 	- `impdp alpha2/ALpha2018__@pdb1 directory=tmp dumpfile=alphaexp.dmp remap_schema=alpha:alpha2`
 
-	![](images/SS-200/057.png)
+	![](images/SG-200/057.png)
 
 # Cloud Migration Using Data Pump: Tablespace Level
 
@@ -255,7 +255,7 @@ We will be creating a copy of the alpha schema and tablespace, and replicating t
 	- `. oraenv` (enter ORCL when prompted)
 	- `/home/oracle/cr_tablespace.sh`
 
-	![](images/SS-200/058.png)
+	![](images/SG-200/058.png)
 
 ### **STEP 12**:  Open alpha_archive tablespace in read only mode and export the metadata
 
@@ -265,7 +265,7 @@ We will be creating a copy of the alpha schema and tablespace, and replicating t
 	- `exit`
 	- `expdp system/ALpha2018__@pdb1 directory=oracle dumpfile=alpha_archive_tbs.dmp transport_tablespaces=alpha_archive exclude=statistics encryption_password=ALpha2018__ logfile=full_tts_export.log`
 
-	![](images/SS-200/059.png)
+	![](images/SG-200/059.png)
 
 
 ### **STEP 13**:  Copy the metadata to the target Alpha01A-DBCS instance
@@ -273,26 +273,26 @@ We will be creating a copy of the alpha schema and tablespace, and replicating t
 -	Copy the alpha_\archive_tbs.dmp file.  In the terminal window enter the following:
 	- `scp -i /tmp/privateKey /home/oracle/alpha_archive_tbs.dmp opc@<Alpha01A-DBCS IP>:/tmp` -- metadata
 
-	![](images/SS-200/060.png)
+	![](images/SG-200/060.png)
 
 ### **STEP 14**:  Copy the datafile to the target Alpha01A-DBCS instance
 
 -	Since DBCS-OCI uses Automatic Storage Management (ASM) we need to locate the datafile in ASM first.  Go to SQL Developer to do that.  Open the DBA view and click on the PDB1 pluggable database in the Local Sys CDB connection.
 
-	![](images/SS-200/061.png)
+	![](images/SG-200/061.png)
 
 -	Open a new terminal window and start ASM CLI.  Enter the following:
 	- `. oraenv` enter ORCL when prompted
 	- `asmcmd -a sysdba`
 	- Enter the cp command to copy the data file to the tmp directory.  Select the alpha_archive datafile as show in the screenshot (your name/version will be different)
 
-	![](images/SS-200/062.png)
+	![](images/SG-200/062.png)
 
 -	Exit out of asmcmd and then SCP (copy) the dbf file to Alpha01A-DBCS.
 	- `exit`
 	- `scp -i /tmp/privateKey /tmp/alpha_archive.<your asm file version number> opc@<Alpha01A-DBCS IP>:/tmp`
 
-	![](images/SS-200/063.png)
+	![](images/SG-200/063.png)
 
 -	SSH into Alpha01A-DBCS and copy the dbf file to the pdb1 directory.
 	- `ssh -i /tmp/privateKey opc@<Alpha01A-DBCS IP>`
@@ -301,11 +301,11 @@ We will be creating a copy of the alpha schema and tablespace, and replicating t
 	- `chown oracle /tmp/alpha_archive_tbs.dmp`
 	- `exit`
 
-	![](images/SS-200/064.png)
+	![](images/SG-200/064.png)
 
 -	Return to SQL Developer and select the PDB1 pluggable database in Alpha01A-DBCS instance.
 
-	![](images/SS-200/065.png)
+	![](images/SG-200/065.png)
 
 -	Copy the dbf file into the PDB1 using ASMCMD.  Enter the following in asmcmd command shell.  You should be still SSH'd into Alpha01A-DBCS and logged in as oracle (sudo su - oracle) from the previous step.
 	- `chmod a+r /tmp/alpha_archive.<asm file version>`
@@ -313,7 +313,7 @@ We will be creating a copy of the alpha schema and tablespace, and replicating t
 	- `cp /tmp/alpha_archive.<version number> <your asm directory for pdb1>/alpha_archive`
 	- `ls <your asm directory>/datafile`
 
-	![](images/SS-200/066.png)
+	![](images/SG-200/066.png)
 
 ### **STEP 15**:  Import the tablespace into the target DBCS instance
 
@@ -325,19 +325,19 @@ We will be importing the data into the pdb1 instance.  We need to first create t
 	- `grant dba to alpha_archive;`
 	- `exit`
 
-	![](images/SS-200/067.png)
+	![](images/SG-200/067.png)
 
 -	Import the metadata (the data is already there in the dbf file).
 	- `impdp system/ALpha2018__@pdb1 directory=tmp dumpfile=alpha_archive_tbs.dmp logfile=full_tts_imp.log encryption_password=ALpha2018__ transport_datafiles='<your asm directory>/alpha_archive'`
 
-	![](images/SS-200/068.png)
+	![](images/SG-200/068.png)
 
 -	Confirm tablespace and contents exist by querying the Oracle dictionary.  Log into sqlplus and run the following query.
 	- `sqlplus system/ALpha2018__@pdb1`
 	- `select tablespace_name, count(*) from dba_tables where owner='ALPHA_ARCHIVE' group by tablespace_name;`
 	- `exit`
 - 
-	![](images/SS-200/069.png)
+	![](images/SG-200/069.png)
 
 # Cloud Migration Using Database Links (Table Level)
 
@@ -353,7 +353,7 @@ Occasionally you just want to copy one or more tables from one database to anoth
 	- `ssh -o StrictHostKeyChecking=no -i /tmp/privateKey -L 1540:<Private IP of Alpha01A-DBCS>:1521 opc@<Public IP of Alpha01A-DBCS>`
 	- Minimize this window.
 
-	![](images/SS-200/070.png)
+	![](images/SG-200/070.png)
 
 -	Log into SQL Plus and create the database link.  Be sure to update this command with your Identity Domain.
 	- `. oraenv`
@@ -366,15 +366,15 @@ using '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1540))(CONNECT_
 ```
 	- `select sysdate from dual@pdb1.<host domain name>;`
 
-	![](images/SS-200/071.png)
+	![](images/SG-200/071.png)
 
 -	Query the REMOTE alpha_archive schema in Alpha01A-DBCS and list tables.  Then copy a table from the remote DBCS to the local instance.  Note that you cannot create a remote table (DDL operation) on the remote server but you can do an insert operation.  
 	- `select table_name from user_tables@alpha_dbcs;`
 
-	![](images/SS-200/072.png)
+	![](images/SG-200/072.png)
 
 	- `create table alpha_services_stats_archive as select * from alpha_services_stats@alpha_dbcs;`
 
-	![](images/SS-200/073.png)
+	![](images/SG-200/073.png)
 
 This lab shows how you can copy entire databases, tablespace datafiles, schemas, and individual tables between on-premise databases and cloud databases.  Depending on the use case one or more of these approaches may be applicable.
