@@ -291,7 +291,7 @@ sudo su -
 
 	![](images/setup/061.png)
 
-### **STEP 6**: Set up shortcut to SQLDeveloper and import connections
+### **STEP 9**: Set up shortcut to SQLDeveloper and import connections
 
 -	Right click on the desktop and create a new launcher on the desktop.  Enter the Name and Command:
 	- **Name:** `SqlDeveloper`
@@ -325,7 +325,7 @@ sudo su -
 
 	![](images/setup/071.png)
 
-### **STEP 7**: Import data
+### **STEP 10**: Import data
 
 -	Update the tnsnames.ora file to add pdb1 and new_pdb (used later).  Open a new terminal window and enter the following:
 	- `gedit /u01/app/oracle/product/12.2.0.1/dbhome_1/network/admin/tnsnames.ora`
