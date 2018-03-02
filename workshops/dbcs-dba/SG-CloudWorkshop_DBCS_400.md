@@ -23,7 +23,9 @@ Please direct comments to: Derrick Cameron (derrick.cameron@oracle.com)
 
 ## Create an Object Store Bucket and Install Oracle CLI.
 
-### **STEP 1**:  Create an Object Store Bucket
+### **STEP 1**:  Create an Object Store Bucket.  
+
+Note if you completed Lab 300 and did the RMAN Backup your bucket will already have been created.
 
 - To create an object store bucket go to the cloud console and select Database (OCI).
 
