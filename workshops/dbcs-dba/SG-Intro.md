@@ -1,16 +1,18 @@
-## How to View the Lab Guides
+# Workshop Introduction
 
-- The Labguides are best viewed using the Workshop's [GitHub Pages Website URL](https://oracle.github.io/learning-library/workshops/dbcs/) 
+## How to Prepare for This Workshop
+
+- To log issues and view the Lab Guide source, go to the [github oracle](https://github.com/oracle/learning-library/tree/master/workshops/dbcs-dbaoci) repository.
+
+- The Labguides are best viewed using the Workshop's [GitHub Pages Website URL](https://oracle.github.io/learning-library/workshops/dbcs-dbaoci/) 
 
 - Once you are viewing the Workshop's GitHub Pages website, you can see a list of Lab Guides at any time by clicking on the **Menu Icon**
 
 ![](images/WorkshopMenu.png)  
 
-- To log issues and view the Lab Guide source, go to the [github oracle](https://github.com/oracle/learning-library/tree/master/workshops/dbcs) repository.
+## Database Cloud Services Workshop for Oracle Compute Infrastructure (OCI)
 
-## Database Cloud Services Workshop
-
-These labs will give you a basic understanding of the Oracle Database Cloud Service and many of the capabilities around administration and database development.
+Welcome to the Oracle Database Cloud Service Workshop. This particular version is based on Oracle's 'OCI' services, versus Oracle 'Classic' services. These labs will give you a basic understanding of the Oracle Database Cloud Service and many of the capabilities around administration and database management. Lab 100 will introduce you to DBCS and show you how to create a Cloud Database. Lab 200 will cover various data migration use cases, including pluggable database migration, tablespace migration, schema migration, and ad-hoc table copying between databases. Lab 300 covers some common Database management activities. Lab 400 show you how to use the Oracle Command Line Interface (CLI) commands to perform various tasks.
 
 ## Workshop Details
 
@@ -18,7 +20,7 @@ These labs will give you a basic understanding of the Oracle Database Cloud Serv
 
 ## Lab 100: Introduction and Database Creation
 
-**Documentation**: [CloudWorkshop\_DBCS\_100.md](CloudWorkshop\_DBCS\_100.md)
+**Documentation**: [SG-CloudWorkshop\_DBCS\_100.md](SG-CloudWorkshop\_DBCS\_100.md)
 
 ### Objectives
 
@@ -32,7 +34,7 @@ These labs will give you a basic understanding of the Oracle Database Cloud Serv
 
 ## Lab 200: Data Migration
 
-**Documentation**: [CloudWorkshop\_DBCS\_200.md](CloudWorkshop\_DBCS\_200.md)
+**Documentation**: [SG-CloudWorkshop\_DBCS\_200.md](SG-CloudWorkshop\_DBCS\_200.md)
 
 ### Objectives
 
@@ -42,7 +44,7 @@ These labs will give you a basic understanding of the Oracle Database Cloud Serv
 
 ## Lab 300: Common DBA Tasks
 
-**Documentation**: [CloudWorkshop\_DBCS\_300.md](CloudWorkshop\_DBCS\_300.md)
+**Documentation**: [SG-CloudWorkshop\_DBCS\_300.md](SG-CloudWorkshop\_DBCS\_300.md)
 
 ### Objectives
 
@@ -54,7 +56,7 @@ These labs will give you a basic understanding of the Oracle Database Cloud Serv
 
 ## Lab 400:  CLI/Curl Commands (Programatic Control of Services)
 
-**Documentation**: [CloudWorkshop\_DBCS\_400.md](CloudWorkshop\_DBCS\_400.md)
+**Documentation**: [SG-CloudWorkshop\_DBCS\_400.md](SG-CloudWorkshop\_DBCS\_400.md)
 
 ### Objectives
 
