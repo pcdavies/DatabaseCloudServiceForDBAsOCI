@@ -228,7 +228,7 @@ sudo su -
 	- `iptables -I INPUT -p tcp -m tcp --dport 5901 -j ACCEPT`
 	- `service iptables restart`
 
-	![](images/SG-setup/046.png)
+	![](images/SG-setup/058.png)
 
 -	Start VNC Server.  You can optionally adjust the geometry to match your screen (eg: `vncserver -geometry 1280x720`).  You will be prompted to enter a password.  Do not use the password that we have been specifying in other places in this lab document.  **VNC is open to the internet.  Select your own secure password.  We suggest you use your cloud password.**.  Be sure you are sudo su to oracle user.
 	- `exit` - this is exist out of the root user
@@ -281,11 +281,7 @@ sudo su -
 
 	![](images/SG-setup/059.png)
 
--	This is the WorkshopImage desktop.  The background may be different across the screen shots.
-
-	![](images/SG-setup/143.png)
-
--	We need to disable the screen saver to prevent a screen unlock prompt.  Go to the system menu on the desktop and de-activate screen saver.  If you delay in this step and the screen locks up you will need to kill the vncserver (`vncserver -kill :1`) and restart it (`vncserver`) in your terminal window.
+-	This is the WorkshopImage desktop.  The background may be different across the screen shots.  We need to disable the screen saver to prevent a screen unlock prompt.  Go to the system menu on the desktop and de-activate screen saver.  If you delay in this step and the screen locks up you will need to kill the vncserver (`vncserver -kill :1`) and restart it (`vncserver`) in your terminal window.
 
 	![](images/SG-setup/060.png)
 

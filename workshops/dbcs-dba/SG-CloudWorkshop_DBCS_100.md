@@ -284,7 +284,7 @@ Note that if you performed the setup steps for this and the following labs some 
 
 	![](images/SG-100/053.png)
 
--	You may encounter a but whereby the browser fails to fully open the web page.  This is due to an adobe-flash bug with certain browsers.  To resolve this go (while the browser is locked opening the page) to tools (top menu in the browser) and select `tools > Web Developer > Debugger`.
+-	You may encounter a bug whereby the browser fails to fully open the web page.  This is due to an adobe-flash bug with certain browsers.  To resolve this go (while the browser is locked opening the page) to tools (top menu in the browser) and select `tools > Web Developer > Debugger`.
 
 	![](images/SG-100/054.png)
 
