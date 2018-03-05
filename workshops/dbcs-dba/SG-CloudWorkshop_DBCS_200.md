@@ -336,7 +336,7 @@ We will be importing the data into the pdb1 instance.  We need to first create t
 	- `sqlplus system/ALpha2018__@pdb1`
 	- `select tablespace_name, count(*) from dba_tables where owner='ALPHA_ARCHIVE' group by tablespace_name;`
 	- `exit`
-- 
+
 	![](images/SG-200/069.png)
 
 # Cloud Migration Using Database Links (Table Level)

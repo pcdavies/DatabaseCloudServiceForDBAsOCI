@@ -124,7 +124,7 @@ We will use the bucket later.
 
   ![](images/SG-400/024.png)
 
--	List compute images.
+-	List compute images.  Substitute your compartment-id in the <compartment-id> placeholder.
   - `oci compute image list -c <compartment-id> --output table --query "data [*].{ImageName:\"display-name\", OCID:id}"`
 
   ![](images/SG-400/025.png)
