@@ -160,7 +160,7 @@ Note that if you performed the setup steps for this and the following labs some 
 
 -	Log back into the Cloud Console to copy the IP address of the new Alpha01A-DBCS instance.
 
-	![](images/SG-100/028.png)
+	![](images/SG-100/029.png)
 
 -	Note the Private and Public IP addresses of the `Alpha01A-DBCS` instance.  Write these down, we will use them later.
 
