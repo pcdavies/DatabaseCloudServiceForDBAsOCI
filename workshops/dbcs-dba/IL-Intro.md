@@ -20,7 +20,7 @@ Welcome to the Oracle Database Cloud Service Workshop. This particular version i
 
 ## Lab 100: Introduction and Database Creation
 
-**Documentation**: [SG-100.md](SG-100.md)
+**Documentation**: [IL-100.md](IL-100.md)
 
 ### Objectives
 
@@ -33,7 +33,7 @@ Welcome to the Oracle Database Cloud Service Workshop. This particular version i
 
 ## Lab 200: Data Migration
 
-**Documentation**: [SG-200.md](SG-200.md)
+**Documentation**: [IL-200.md](IL-200.md)
 
 ### Objectives
 
@@ -44,7 +44,7 @@ Welcome to the Oracle Database Cloud Service Workshop. This particular version i
 
 ## Lab 300: Common DBA Tasks
 
-**Documentation**: [SG-300.md](SG-300.md)
+**Documentation**: [IL-300.md](IL-300.md)
 
 ### Objectives
 
@@ -56,7 +56,7 @@ Welcome to the Oracle Database Cloud Service Workshop. This particular version i
 
 ## Lab 400:  CLI/Curl Commands (Programatic Control of Services)
 
-**Documentation**: [SG-400.md](SG-400.md)
+**Documentation**: [IL-400.md](IL-400.md)
 
 ### Objectives
 
