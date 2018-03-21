@@ -1,6 +1,6 @@
 ![](images/IL-100/001.png)
 
-Update January 25, 2018
+Update March 20, 2018
 
 ## Introduction
 
@@ -9,8 +9,6 @@ This is the first of several labs that are part of the Oracle Public Cloud Datab
 This lab will walk you through creating a new Database Cloud Service, and then have you connect into the Database image using the ssh private key to familiarize yourself with the image layout. Next you will learn how to create a ssh tunnel to access ports that are closed on a remote OPC instance. Using the tunnels, you will learn how to access various Database consoles.  
 
 **Note:  It will be helpful to have a notepad open as a holding place to copy and paste various items throughout all the labs.** 
-
-Note that if you performed the setup steps for this and the following labs some of these steps will be familiar.
 
 - To log issues and view the Lab Guide source, go to the [github oracle](https://github.com/oracle/learning-library/tree/master/workshops/dbcs-dba-oci) repository.
 
@@ -57,9 +55,9 @@ Note that if you performed the setup steps for this and the following labs some 
 
 	![](images/IL-100/008.png)	
 
-### **STEP 3**:  Connect to the WorkshopImage using your VNC Viewer
+### **STEP 3**:  Connect to the WorkshopImage using your VNC Viewer and create a SQL Developer Shortcut
 
--	If you do not already have a VNC Viewer, download realvnc or tightvnc from the internet and install on your computer. Run the VNC Viewer and enter the Public IP you just copied, along with appending :1. You will be prompted for a password.  If you ran the setup instructions for vnc server you would have entered this password yourself.  Obtain this from the person who ran the setup for you if it was another person.
+-	If you do not already have a VNC Viewer, download realvnc or tightvnc from the internet and install on your computer. Run the VNC Viewer and enter the Public IP you just copied, along with appending :1. You will be prompted for a password.  
 
 	![](images/IL-100/009.png)	
 
@@ -93,15 +91,16 @@ Note that if you performed the setup steps for this and the following labs some 
 
 	![](images/SG-setup/068.1.png)
 
-	![](images/SG-setup/069.1.png)
+	![](images/SG-setup/069.png)
 
 	![](images/SG-setup/070.png)
 
 	![](images/SG-setup/071.png)
 
+
 ## Create Database Cloud Service
 
-### **STEP 4**:  Create a Virtual Cloud Network (VCN).  **Note will will not actually create a VNC, but will just go through the steps and then cancel.**
+### **STEP 4**:  Create a Virtual Cloud Network (VCN)
 
 -	Open the browser on the image desktop.  Note that while you can use your own browser on your own desktop, in step 5 below you will need a public key, and to keep things simple we'll be using the same key that was used to create the WorkshopImage, and so you need to be running the browser inside the image to select the key (below).
 
@@ -119,7 +118,7 @@ Note that if you performed the setup steps for this and the following labs some 
 
 	![](images/IL-100/014.png)
 
--	Next select `Create Virtual Cloud Network`.
+-	Next select `Create Virtual Cloud Network`.  Those that previously ran the setup steps may choose to use the existing VCN.
 
 	![](images/IL-100/015.png)
 
@@ -127,9 +126,11 @@ Note that if you performed the setup steps for this and the following labs some 
 
 	![](images/IL-100/016.png)
 
--	Cancel this step.
+-	Scroll to the bottom and save and close.
 
 	![](images/IL-100/017.png)
+
+	![](images/IL-100/018.png)
 
 ### **STEP 5**:  Create a Database Cloud Service
 
