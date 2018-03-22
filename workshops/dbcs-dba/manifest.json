@@ -8,7 +8,7 @@
             "name": "Self-Guided",
             "description": "Individual self-guided learning",
             "imageUrl": "https://oracle.github.io/learning-library/workshops/common-content/images/common/Self-Service.png"
-          }
+          },
           {
             "name": "Instructor Led",
             "description": "Instructor Led Workshop",
@@ -92,7 +92,7 @@
                 "title": "Lab 400: Using the Oracle Command Line Interface (CLI) to manage DBCS Instances",
                 "description": "Install and configure Oracle CLI, and perform various DBA tasks with CLI",
                 "labels": {"version": "Instructor Led"}
-            },
+            }
         ]
     }
 }
