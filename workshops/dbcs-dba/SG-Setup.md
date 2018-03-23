@@ -46,7 +46,7 @@ The following creates a new DBCS Enterprise instance with backup to cloud.  Use 
 
 	![](images/SG-setup/010.png)
 
-### **STEP 3**: Generate SSH Key Pair
+### **STEP 3**: Generate SSH Key Pair on Windows Putty (see lower down to generate on Linux O/S).
 
 -	When you create a DBCS instance (next step) you will be prompted for a public key.  This needs to be generated in advance.  Open Puttygen (available from the internet) and select generate a new key pair.
 
@@ -81,6 +81,10 @@ The following creates a new DBCS Enterprise instance with backup to cloud.  Use 
 -	Name the key `privateKey`.  Note this version will NOT have the .ppk suffix that the private key you saved above.
 
 	![](images/SG-setup/016.3.png)
+
+-	IF you are running a Linux OS use the following commands to generate a key pair.  This generates sshkey and sshkey.pub. Note you will need to rename these to privateKey and PublicKey to avoid confusion later in the labs.
+	- `ssh-keygen` (name it sshkey, hit enter to accept without a password)
+	- `chmod 600 sshkey` (change permissions of the private key)
 
 ### **STEP 4**: Create **Workshop** Image (DBCS Instance)
 
@@ -142,9 +146,9 @@ The following creates a new DBCS Enterprise instance with backup to cloud.  Use 
 
 	![](images/SG-setup/029.2.png)
 
-### **STEP 6**: Copy files to the WorkshopImage
+### **STEP 6**: Copy files to the WorkshopImage.  See lower down if you are using a Linux OS.
 
--	Once the WorkshopImage is available log into the Cloud Console to obtain the IP address.
+-	Once the WorkshopImage is available log into the Cloud Console to obtain the Public IP address.
 
 	![](images/SG-setup/030.png)
 
@@ -174,6 +178,11 @@ The following creates a new DBCS Enterprise instance with backup to cloud.  Use 
 
 	![](images/SG-setup/038.png)
 
+-	IF you are using a Linux desktop use the following command (running from the directory where you staged the files).  Otherwise if you are on Windows disregard this step.
+```
+scp -i privateKey * opc@<WorkshopImage Pubic IP>:.
+```
+
 ### **STEP 7**: Log into your WorkshopImage and run install scripts
 
 -	Open Putty and log into the DBCS instance.
@@ -191,11 +200,13 @@ The following creates a new DBCS Enterprise instance with backup to cloud.  Use 
 	![](images/SG-setup/042.png)
 
 -	Copy the files to the /tmp directory.  Enter the following:
-	- `chmod a+rw *`
-	- `mv publicKey publicKey.pub`
-	- `cp * /tmp`
+```
+chmod a+rw *
+mv publicKey publicKey.pub
+cp * /tmp
+```
 
-	![](images/SG-setup/043.png)
+![](images/SG-setup/043.png)
 
 -	Install the yum repository and then adobe and git packages.  Enter the following:
 ```
@@ -209,6 +220,7 @@ exit
 
 -	Log in as Oracle and copy the install files from the DBCS Workshop git.
 ```
+. oraenv (enter ORCL when prompted)
 sudo su - oracle
 svn export https://github.com/pcdavies/DatabaseCloudServiceForDBAsOCI/trunk/workshops/dbcs-dba/install/install_oci.zip
 unzip install_oci.zip
@@ -224,18 +236,22 @@ sudo su -
 ![](images/SG-setup/046.png)
 
 -	While we are logged in as root we also need to open the VNC server port that we'll be starting in the next step.  Enter the following.
-	- `sed -i 's/IPTABLES_SAVE_ON_RESTART="no"/IPTABLES_SAVE_ON_RESTART="yes"/g' /etc/sysconfig/iptables-config`
-	- `iptables -I INPUT -p tcp -m tcp --dport 5901 -j ACCEPT`
-	- `service iptables restart`
+```
+sed -i 's/IPTABLES_SAVE_ON_RESTART="no"/IPTABLES_SAVE_ON_RESTART="yes"/g' /etc/sysconfig/iptables-config
+iptables -I INPUT -p tcp -m tcp --dport 5901 -j ACCEPT
+service iptables restart
+```
 
-	![](images/SG-setup/058.png)
+![](images/SG-setup/058.png)
 
 -	Start VNC Server.  You can optionally adjust the geometry to match your screen (eg: `vncserver -geometry 1280x720`).  You will be prompted to enter a password.  Do not use the password that we have been specifying in other places in this lab document.  **VNC is open to the internet.  Select your own secure password.  We suggest you use your cloud password.**.  Be sure you are sudo su to oracle user.
-	- `exit` - this is exist out of the root user
-	`sudo su - oracle`
-	- `vncserver`
+```
+exit (this is to exit out of the root user)
+sudo su - oracle
+vncserver
+```
 
-	![](images/SG-setup/047.png)
+![](images/SG-setup/047.png)
 
 ### **STEP 8**: Open Port 5901 (VNC) and log into the desktop
 
@@ -324,15 +340,20 @@ sudo su -
 ### **STEP 10**: Import data
 
 -	Update the tnsnames.ora file to add pdb1 and new_pdb (used later).  Open a new terminal window and enter the following:
-	- `gedit /u01/app/oracle/product/12.2.0.1/dbhome_1/network/admin/tnsnames.ora`
+```
+gedit /u01/app/oracle/product/12.2.0.1/dbhome_1/network/admin/tnsnames.ora
+```
 
-	![](images/SG-setup/072.png)
+![](images/SG-setup/072.png)
 
 -	Copy the CDB connection entry into two more entries that we'll modify for pdb1 and new_pdb.  Update as follows.  Then save.
 
 	![](images/SG-setup/073.png)
 
 -	Open a terminal window and enter the following:
-	- `./install_oci.sh`
+```
+. oraenv (enter ORCL when prompted)
+./install_oci.sh
+```
 
-	![](images/SG-setup/074.png)
+![](images/SG-setup/074.png)
