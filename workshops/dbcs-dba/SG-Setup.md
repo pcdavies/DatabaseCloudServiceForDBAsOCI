@@ -199,11 +199,12 @@ scp -i privateKey * opc@<WorkshopImage Pubic IP>:.
 
 	![](images/SG-setup/042.png)
 
--	Copy the files to the /tmp directory.  Enter the following:
+-	Copy the files to the /tmp/ws directory.  Enter the following:
 ```
 chmod a+rw *
 mv publicKey publicKey.pub
-cp * /tmp
+mkdir /tmp/ws
+cp * /tmp/ws
 ```
 
 ![](images/SG-setup/043.png)
@@ -211,8 +212,8 @@ cp * /tmp
 -	Install the yum repository and then adobe and git packages.  Enter the following:
 ```
 sudo su -
-cp /tmp/public-yum-ol6.repo /etc/yum.repos.d
-rpm -ivh /tmp/adobe-release-x86_64-1.0-1.noarch.rpm
+cp /tmp/ws/public-yum-ol6.repo /etc/yum.repos.d
+rpm -ivh /tmp/ws/adobe-release-x86_64-1.0-1.noarch.rpm
 yum -y install svn
 exit
 ```
