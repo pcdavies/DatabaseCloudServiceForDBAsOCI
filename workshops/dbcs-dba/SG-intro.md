@@ -25,7 +25,6 @@ Welcome to the Oracle Database Cloud Service Workshop. This particular version i
 ### Objectives
 
 -	Familiarize yourself with the Oracle Cloud Infrastructure.
--	Backup your local database to the Oracle Cloud.
 -	Create a Virtual Cloud Network (VCN).
 -	Create Database Cloud Service.
 -   SSH configuration.
@@ -52,7 +51,6 @@ Welcome to the Oracle Database Cloud Service Workshop. This particular version i
 -   Scale up an instance.
 -   Add a SSH Key.
 -   Recover a dropped table.
-
 
 ## Lab 400:  CLI/Curl Commands (Programatic Control of Services)
 
