@@ -32,28 +32,28 @@
             },
             {
                 "number": "100",
-                "filename": "SG-100.md",
+                "filename": "IL-100.md",
                 "title": "Lab 100: Introduction",
                 "description": "Create and access a Database Cloud Instance",
                 "labels": {"version": "Self-Guided"}
             },
             {
                 "number": "200",
-                "filename": "SG-200.md",
+                "filename": "IL-200.md",
                 "title": "Lab 200: Cloud Migration",
                 "description": "Explore some common use cases for moving your data from on-premise to the cloud",
                 "labels": {"version": "Self-Guided"}
             },
             {
                 "number": "300",
-                "filename": "SG-300.md",
+                "filename": "IL-300.md",
                 "title": "Lab 300: DBCS Maintenance",
                 "description": "Perform some common DBA tasks such as setting up security access and scaling out your instance.",
                 "labels": {"version": "Self-Guided"}
             },
             {
                 "number": "400",
-                "filename": "SG-400.md",
+                "filename": "IL-400.md",
                 "title": "Lab 400: Using the Oracle Command Line Interface (CLI) to manage DBCS Instances",
                 "description": "Install and configure Oracle CLI, and perform various DBA tasks with CLI",
                 "labels": {"version": "Self-Guided"}
