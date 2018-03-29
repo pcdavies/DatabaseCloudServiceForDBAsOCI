@@ -88,7 +88,7 @@ The following creates a new DBCS Enterprise instance with backup to cloud.  Use 
 
 	![](images/SG-setup-manual/015.png)
 
--	Name it `privateKey` for future reference.
+-	Name it `privateKey.ppk` for future reference.
 
 	![](images/SG-setup-manual/016.png)
 
@@ -204,18 +204,21 @@ We will create a second DBCS instance to support lab200 activities that involve 
 
 	![](images/SG-setup-manual/035.png)
 
--	Drag the following files from your download location to the oracle folder.
+-	Create directory /tmp/ws.  Go to Commands and select Open Terminal.  Ignore comment about Linux commands.
+
+	![](images/SG-setup-manual/035.1.png)
+
+-	Enter the following and select Execute and then Close.
+```
+mkdir /tmp/ws
+```
+![](images/SG-setup-manual/035.2.png)
+
+![](images/SG-setup-manual/035.3.png)
+
+-	Change to the /tmp/ws directory and drag the following files from your download location to the /tmp/ws folder.
 
 	![](images/SG-setup-manual/036.png)
-
-	![](images/SG-setup-manual/037.png)
-
-	![](images/SG-setup-manual/038.png)
-
--	IF you are using a Linux desktop use the following command (running from the directory where you staged the files).  Otherwise if you are on Windows disregard this step.
-```
-scp -i privateKey * opc@<WorkshopImage Pubic IP>:.
-```
 
 ### **STEP 7**: Log into your WorkshopImage and run install scripts
 
@@ -233,15 +236,10 @@ scp -i privateKey * opc@<WorkshopImage Pubic IP>:.
 
 	![](images/SG-setup-manual/042.png)
 
--	Copy the files to the /tmp/ws directory.  Enter the following:
+-	Change file permissions.  Enter the following:
 ```
-chmod a+rw *
-mv publicKey publicKey.pub
-mkdir /tmp/ws
-cp * /tmp/ws
+chmod a+rw /tmp/ws/*
 ```
-
-![](images/SG-setup-manual/043.png)
 
 -	Install the yum repository and then adobe and git packages.  Enter the following:
 ```
@@ -266,7 +264,7 @@ exit
 -	Log back in as root and install the desktop packages.  Enter the following.
 ```
 sudo su -
-/home/oracle/yum.sh
+/tmp/ws/oci_ws_yum.sh
 ```
 ![](images/SG-setup-manual/046.png)
 
@@ -276,7 +274,6 @@ sed -i 's/IPTABLES_SAVE_ON_RESTART="no"/IPTABLES_SAVE_ON_RESTART="yes"/g' /etc/s
 iptables -I INPUT -p tcp -m tcp --dport 5901 -j ACCEPT
 service iptables restart
 ```
-
 ![](images/SG-setup-manual/058.png)
 
 -	Start VNC Server.  You can optionally adjust the geometry to match your screen (eg: `vncserver -geometry 1280x720`).  You will be prompted to enter a password.  Do not use the password that we have been specifying in other places in this lab document.  **VNC is open to the internet.  Select your own secure password.  We suggest you use your cloud password.**.  Be sure you are sudo su to oracle user.
@@ -285,7 +282,6 @@ exit (this is to exit out of the root user)
 sudo su - oracle
 vncserver
 ```
-
 ![](images/SG-setup-manual/047.png)
 
 ### **STEP 8**: Open Port 5901 (VNC) and log into the desktop
