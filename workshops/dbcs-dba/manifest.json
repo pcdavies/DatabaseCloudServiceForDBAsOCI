@@ -18,14 +18,14 @@
         "labs": [
             {
                 "number": "10",
-                "filename": "SG-Intro.md",
+                "filename": "SG-intro.md",
                 "title": "Self Guided Introduction",
                 "description": "Step-by-step workshop instructions",
                 "labels": {"version": "Self-Guided"}
             },
             {
                 "number": "20",
-                "filename": "SG-Setup.md",
+                "filename": "SG-setup-manual.md",
                 "title": "Setup Steps for Self Guided Labs",
                 "description": "Step-by-step setup instructions",
                 "labels": {"version": "Self-Guided"}
@@ -60,7 +60,7 @@
             },
             {
                 "number": "10",
-                "filename": "IL-Intro.md",
+                "filename": "IL-intro.md",
                 "title": "Instructor Led Introduction",
                 "description": "Step-by-step workshop instructions",
                 "labels": {"version": "Instructor Led"}
