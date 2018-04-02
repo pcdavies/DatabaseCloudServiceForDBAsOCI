@@ -26,14 +26,14 @@
             {
                 "number": "20",
                 "filename": "SG-setup-manual.md",
-                "title": "Setup Steps for Self Guided Labs (Manual)",
+                "title": "Option 1: Manual Setup Steps for Self Guided Labs",
                 "description": "Step-by-step setup instructions",
                 "labels": {"version": "Self-Guided"}
             },
             {
                 "number": "30",
                 "filename": "SG-setup-terraform.md",
-                "title": "Setup Steps for Self Guided Labs (Terraform)",
+                "title": "Option 2: Terraform Setup Steps for Self Guided Labs (fewer steps)",
                 "description": "Step-by-step setup instructions",
                 "labels": {"version": "Self-Guided"}
             },
