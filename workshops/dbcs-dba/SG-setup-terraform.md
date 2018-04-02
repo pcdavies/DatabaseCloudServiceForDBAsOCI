@@ -185,3 +185,15 @@ rsa -in oci_api_key.pem -outform PEM -pubout -out oci_api_key_public.pem
 	![](images/SG-setup-terraform/042.png)
 
 	![](images/SG-setup-terraform/043.png)
+
+-	Copy the Region value into the region varable in env-vars.bat.
+
+	![](images/SG-setup-terraform/044.png)
+
+### **STEP 6**: Run Terraform.
+
+-	Open a command window in the Terraform directory and run terraform init.  You should see the following.
+
+	![](images/SG-setup-terraform/045.png)
+
+
