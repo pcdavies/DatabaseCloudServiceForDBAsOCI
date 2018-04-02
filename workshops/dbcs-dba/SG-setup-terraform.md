@@ -147,3 +147,41 @@ rsa -in oci_api_key.pem -outform PEM -pubout -out oci_api_key_public.pem
 	![](images/SG-setup-terraform/030.png)
 
 	![](images/SG-setup-terraform/031.png)
+
+-	Select Tenancy and copy the tenancy_ocid.  Update the env-vars.bat file with this value (paste carefully between the double quotes).
+
+	![](images/SG-setup-terraform/032.png)
+
+	![](images/SG-setup-terraform/033.png)
+
+-	Next go to Ientity - Users.  Copy the user_ocid and paste into the env-vars.bat file.
+
+	![](images/SG-setup-terraform/034.png)
+
+	![](images/SG-setup-terraform/035.png)
+
+-	While in this screen Add your Public pem Key.
+
+	![](images/SG-setup-terraform/036.png)
+
+	![](images/SG-setup-terraform/037.png)
+
+-	Copy the fingerprint from the public key into the env-vars.bat file.
+
+	![](images/SG-setup-terraform/038.png)
+
+-	Next go to Storage - Object Storage.  
+
+	![](images/SG-setup-terraform/039.png)
+
+-	Create a new bucket in the `Demo` compartment (see lower left for Compartment selection).  Call it `alpha`.  Accept the defaults.
+
+	![](images/SG-setup-terraform/040.png)
+
+	![](images/SG-setup-terraform/041.png)
+
+-	Select the `alpha` bucket, and then copy the compartment_ocid and paste it into the env-vars.bat file.
+
+	![](images/SG-setup-terraform/042.png)
+
+	![](images/SG-setup-terraform/043.png)
