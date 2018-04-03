@@ -198,18 +198,24 @@ rsa -in oci_api_key.pem -outform PEM -pubout -out oci_api_key_public.pem
 
 ### **STEP 6**: Run Terraform.
 
--	Open a command window in the Terraform directory and run env-vars.
-
--	Then run `terraform init`.  You should see the following.
+-	Open a command window in the Terraform directory and enter `env-vars.bat`.
 
 	![](images/SG-setup-terraform/045.png)
 
--	Then run `terraform plan`
+-	Then enter `terraform init`.  You should see the following.
 
 	![](images/SG-setup-terraform/046.png)
 
--	Then run 'terraform apply`.  You will be prompted to enter yes after a few seconds.
+-	Then enter `terraform plan`
 
 	![](images/SG-setup-terraform/047.png)
+
+-	Then enter `terraform apply`.  You will be prompted to enter yes after a few seconds.
+
+	![](images/SG-setup-terraform/048.png)
+
+-	When it completes you should see this.
+
+	![](images/SG-setup-terraform/049.png)
 
 You should now be able to VNC into your WorkshopInstance.
