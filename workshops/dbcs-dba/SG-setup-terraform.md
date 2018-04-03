@@ -95,7 +95,7 @@ rsa -in oci_api_key.pem -outform PEM -pubout -out oci_api_key_public.pem
 
 ### **STEP 4**: Download the Oracle Backup Module, the Adobe Yum Repository, and the public yum ol6 repository to your Terraform directory (we are using D:\tf).
 
--	Go to the following site to download opc_installer.zip and save to your local download location:  `http://www.oracle.com/technetwork/database/availability/oracle-cloud-backup-2162729.html`
+-	Go to the following site to download opc_installer.zip and save to /scripts/ws folder in your Terraform location:  `http://www.oracle.com/technetwork/database/availability/oracle-cloud-backup-2162729.html`
 
 	![](images/SG-setup-terraform/017.png)
 
@@ -105,13 +105,13 @@ rsa -in oci_api_key.pem -outform PEM -pubout -out oci_api_key_public.pem
 
 	![](images/SG-setup-terraform/019.png)
 
--	Select the version YUM.
+-	Select the version YUM and save to the /scripts/ws directory in your Terraform location.
 
 	![](images/SG-setup-terraform/020.png)
 
 	![](images/SG-setup-terraform/021.png)
 
--	Go to `https://public-yum.oracle.com/public-yum-ol6.repo` and save the page results to your download directory.  
+-	Go to `https://public-yum.oracle.com/public-yum-ol6.repo` and save the page results to your /scripts/ws directory in your Terraform location.  
 
 	![](images/SG-setup-terraform/022.png)
 
