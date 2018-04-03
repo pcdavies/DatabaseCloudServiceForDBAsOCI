@@ -30,10 +30,6 @@ https://github.com/oracle/terraform-provider-oci/releases
 
 ### **STEP 2**: Generate SSH Key Pair on Windows Putty
 
--	Create a keys sub directory in your terraform directory.
-
-	![](images/SG-setup-terraform/002.png)
-
 -	Open Puttygen (available from the internet) and select generate a new key pair.
 
 	![](images/SG-setup-terraform/003.png)
@@ -67,6 +63,8 @@ https://github.com/oracle/terraform-provider-oci/releases
 -	Name the key `privateKey`.  Note this version will NOT have the .ppk suffix that the private key you saved above.
 
 	![](images/SG-setup-terraform/011.png)
+
+-	Copy the three keys (privateKey, privateKey.ppk, publicKey) into your Terraform /keys directory (if they were saved elsewhere.)
 
 ### **STEP 3**: Generate Open SSL Key Pair on Windows
 
@@ -162,19 +160,19 @@ rsa -in oci_api_key.pem -outform PEM -pubout -out oci_api_key_public.pem
 
 	![](images/SG-setup-terraform/033.png)
 
--	Next go to Ientity - Users.  Copy the user_ocid and paste into the env-vars.bat file.
+-	Next go to Identity - Users.  Copy the user_ocid and paste into the env-vars.bat file.
 
 	![](images/SG-setup-terraform/034.png)
 
 	![](images/SG-setup-terraform/035.png)
 
--	While in this screen Add your Public pem Key.
+-	While in this screen Add your Public pem Key.  You will need to navigate to your Terraform /keys directory and open and select the contents to copy.  Paste into the window here.
 
 	![](images/SG-setup-terraform/036.png)
 
 	![](images/SG-setup-terraform/037.png)
 
--	Copy the fingerprint from the public key into the env-vars.bat file.
+-	Copy the fingerprint from the public key and paste into the fingerprint field in the env-vars.bat file.
 
 	![](images/SG-setup-terraform/038.png)
 

@@ -33,7 +33,7 @@
             {
                 "number": "30",
                 "filename": "SG-setup-terraform.md",
-                "title": "Option 2: Terraform Setup Steps for Self Guided Labs (fewer steps)",
+                "title": "Option 2: Recommended - Terraform Setup Steps for Self Guided Labs",
                 "description": "Step-by-step setup instructions",
                 "labels": {"version": "Self-Guided"}
             },
