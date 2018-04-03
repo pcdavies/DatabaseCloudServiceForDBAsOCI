@@ -4,19 +4,27 @@ Update April 2, 2018
 
 This workshop requires several setups steps that are normally done in advance as part of an automated process prior to running the labs.  In cases where a customer wishes to run through the workshop themselves on their own without the support of Global Services Engineering (GSE) they must first walk through the following steps.  Note there are two setup options: The first is manual, and the second (this one) uses Terraform with the Oracle Terraform OCI Provider.  This is the recommended set as it has fewer steps and configures the cloud automatically.  We have left the manual one in place so you can see what the Terraform process will do for you.  
 
-### **STEP 1**: Install Terraform and the Oracle Terraform OCI-Provider.
+### **STEP 1**: Download the Terraform Configuration Files and Install Terraform and the Oracle Terraform OCI-Provider.
 
--	Download and install Terraform.  You have options for where you want to install it.  For the purposes of documenting the instructions we will use d:\tf directory.
+-	Download and install git.
+```
+https://git-scm.com/download/win
+```
+-	Clone the Terraform Repository.
+
+<got to put stuff here>
+
+-	Download and install Terraform.  You have options for where you want to install it.  For the purposes of documenting the instructions we will use `d:\tf` directory.
 ```
 https://www.terraform.io/downloads.html
 ```
  
- -	Download and install the Oracle 
+ -	Download and install the Oracle Terraform Provider for OCI.
 ```
 https://github.com/oracle/terraform-provider-oci/releases
 ```
 
--	Copy the Terraform configuration files into your working directory.  The directory should look like this, with the terraform and oci provider and configuration files all on one directory.
+-	Copy the Terraform configuration files from the git above into your Terraform working directory.  The directory should look like this, with the terraform and oci provider and configuration files all on one directory, and keys and scripts sub-directories from the git.
 
 	![](images/SG-setup-terraform/001.png)
 
