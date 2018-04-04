@@ -4,16 +4,22 @@ Update April 2, 2018
 
 This workshop requires several setups steps that are normally done in advance as part of an automated process prior to running the labs.  In cases where a customer wishes to run through the workshop themselves on their own without the support of Global Services Engineering (GSE) they must first walk through the following steps.  Note there are two setup options: The first is manual, and the second (this one) uses Terraform with the Oracle Terraform OCI Provider.  This is the recommended set as it has fewer steps and configures the cloud automatically.  We have left the manual one in place so you can see what the Terraform process will do for you.  
 
-### **STEP 1**: Download the Terraform Configuration Files and Install Terraform and the Oracle Terraform OCI-Provider.
+### **STEP 1**: Install Git, Download the Terraform Configuration Files, and Install Terraform and the Oracle Terraform OCI-Provider
 
 -	Download and install git.
 ```
 https://git-scm.com/download/win
 ```
--	Clone the Terraform Repository.
+-	Clone the Terraform Repository.  We are cloning to d: (you can clone elsewhere).  Open a command window and enter the following.
+```
+git clone https://oracle.github.io/learning-library/workshops/dbcs-dba-oci/
+```
+![](images/SG-setup-terraform/001.png)
 
-<got to put stuff here>
+-	Extract the Terraform configuration files from the git above into your Terraform working directory.  In our case we are extracting from `d:\DatabaseCloudServiceForDBAsOCI\workshops\dbcs-dba\install\TF.zip` to `d:`.  
 
+	![](images/SG-setup-terraform/002.png)
+	
 -	Download and install Terraform.  You have options for where you want to install it.  For the purposes of documenting the instructions we will use `d:\tf` directory, and will reference this throughout.
 ```
 https://www.terraform.io/downloads.html
@@ -24,76 +30,39 @@ https://www.terraform.io/downloads.html
 https://github.com/oracle/terraform-provider-oci/releases
 ```
 
--	Copy the Terraform configuration files from the git above into your Terraform working directory.  The directory should look like this, with the terraform and oci provider and configuration files all on one directory, and keys and scripts sub-directories from the git.
+-	The directory should look like this, with the terraform and oci provider and configuration files all on one directory, and keys and scripts sub-directories from the git.
 
-	![](images/SG-setup-terraform/001.png)
+	![](images/SG-setup-terraform/002.1.png)
 
-### **STEP 2**: Generate SSH Key Pair on Windows Putty
+### **STEP 2**: Generate SSH Key Pair using git bash.
 
--	Open Puttygen (available from the internet) and select generate a new key pair.
+-	Open `Git Bash` from your program menu. Change directories to your terraform\keys directory.  In our case it is `d:/TF/keys`.
 
 	![](images/SG-setup-terraform/003.png)
 
--	Then save the public key to your `d:\tf\keys` directory.
+-	Generate your ssh public key.  Enter the following (assuming your tf directory is d:/tf).
+```
+ssh-keygen d:/tf/keys/publicKey.pub
+```
+![](images/SG-setup-terraform/004.png)
 
-	![](images/SG-setup-terraform/004.png)
-
--	Name it `publicKey.pub` for future reference.
+-	Rename the `publicKey` to `privateKey`.  The `publicKey.pub` is the public one, the other is the private one.
 
 	![](images/SG-setup-terraform/005.png)
 
--	Then save private key to your `d:\tf\keys` directory
-
-	![](images/SG-setup-terraform/006.png)
-
--	Save it without a passphrase.
-
-	![](images/SG-setup-terraform/007.png)
-
--	Name it `privateKey.ppk` for future reference.
-
-	![](images/SG-setup-terraform/008.png)
-
--	Next export OpenSSH key for use on the Linux Image later in the labs.  In puttygen go to Conversions.
-
-	![](images/SG-setup-terraform/009.png)
-
-	![](images/SG-setup-terraform/010.png)
-
--	Name the key `privateKey`.  Note this version will NOT have the .ppk suffix that the private key you saved above.
-
-	![](images/SG-setup-terraform/011.png)
-
--	Copy the three keys (privateKey, privateKey.ppk, publicKey) into your `d:\tf\keys` directory (if they were saved elsewhere.)
-
-### **STEP 3**: Generate Open SSL Key Pair on Windows
-
--	Download a Open SSL key generation program from the internet.  There are various sites.  The following can be used.
+-	Generate the api private and public keys (PEM format) for the api user.  Also change permissions of the private key.
 ```
-https://indy.fulgan.com/SSL/
+openssl genrsa -out d:/tf/keys/oci_api_key.pem 204
+chmod go-rwx d:/tf/keys/oci_api_key.pem
+openssl rsa -pubout -in d:/tf/keys/oci_api_key.pem -out d:/tf/keys/oci_api_key_public.pem
 ```
+![](images/SG-setup-terraform/006.png)
 
--	Assuming you chose to use this key generation program (you can use your own), generate a private key.  Double click on the OpenSSL.exe file and then enter the following.  You will have to enter a pass phrase (make one up, at least four digits long).
-```
-genrsa -des3 -out oci_api_key.pem 2048
-```
-![](images/SG-setup-terraform/012.png)
+-	The keys directory should look like this.
 
-![](images/SG-setup-terraform/013.png)
+![](images/SG-setup-terraform/007.png)
 
--	Generate the public key.  Enter the following
-```
-rsa -in oci_api_key.pem -outform PEM -pubout -out oci_api_key_public.pem
-```
-![](images/SG-setup-terraform/014.png)
-
--	Copy the pem keys from the OpenSSL directory to your `d:\tf\keys` directory.  You should have five keys in the `d:\tf\keys` directory now: public and private OpenSSL pem keys, a public and private SSH key, and a private ppk Windows compatible key.
-
-![](images/SG-setup-terraform/015.png)
-
-![](images/SG-setup-terraform/016.png)
-
-### **STEP 4**: Download the Oracle Backup Module, the Adobe Yum Repository, and the public yum ol6 repository to your Terraform directory (we are using D:\tf).
+### **STEP 3**: Download the Oracle Backup Module, the Adobe Yum Repository, and the public yum ol6 repository to your Terraform directory (we are using D:\tf).
 
 -	Go to the following site to download opc_installer.zip and save to `d:\tf\scripts\ws` folder in your Terraform location:  `http://www.oracle.com/technetwork/database/availability/oracle-cloud-backup-2162729.html`
 
@@ -119,7 +88,7 @@ rsa -in oci_api_key.pem -outform PEM -pubout -out oci_api_key_public.pem
 
 	![](images/SG-setup-terraform/023.png)
 
-### **STEP 5**: Log into the Cloud Console and Retrieve Account Information
+### **STEP 4**: Log into the Cloud Console and Retrieve Account Information
 
 - We need to update the env-vars.bat file in the Terraform directory.  Open this file to review what needs to be updated.
 
@@ -196,7 +165,7 @@ rsa -in oci_api_key.pem -outform PEM -pubout -out oci_api_key_public.pem
 
 	![](images/SG-setup-terraform/044.png)
 
-### **STEP 6**: Run Terraform.
+### **STEP 5**: Run Terraform.
 
 -	Open a command window in the Terraform directory and enter `env-vars.bat`.
 
