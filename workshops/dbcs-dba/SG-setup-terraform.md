@@ -16,7 +16,7 @@ git clone https://oracle.github.io/learning-library/workshops/dbcs-dba-oci/
 ```
 ![](images/SG-setup-terraform/001.png)
 
--	Extract the Terraform configuration files from the git above into your Terraform working directory.  In our case we are extracting from `d:\DatabaseCloudServiceForDBAsOCI\workshops\dbcs-dba\install\TF.zip` to `d:`.  
+-	Extract the Terraform configuration files from the git above into your Terraform working directory.  In our case we are extracting from `d:\DatabaseCloudServiceForDBAsOCI\workshops\dbcs-dba\install\TF.zip` to `d:`.  De-select the Path.
 
 	![](images/SG-setup-terraform/002.png)
 	
@@ -34,7 +34,7 @@ https://github.com/oracle/terraform-provider-oci/releases
 
 	![](images/SG-setup-terraform/002.1.png)
 
-### **STEP 2**: Generate SSH Key Pair using git bash.
+### **STEP 2**: Generate a SSH and an API Key Pair using git bash.
 
 -	Open `Git Bash` from your program menu. Change directories to your terraform\keys directory.  In our case it is `d:/TF/keys`.
 
@@ -42,7 +42,7 @@ https://github.com/oracle/terraform-provider-oci/releases
 
 -	Generate your ssh public key.  Enter the following (assuming your tf directory is d:/tf).
 ```
-ssh-keygen d:/tf/keys/publicKey.pub
+ssh-keygen
 ```
 ![](images/SG-setup-terraform/004.png)
 
@@ -52,7 +52,7 @@ ssh-keygen d:/tf/keys/publicKey.pub
 
 -	Generate the api private and public keys (PEM format) for the api user.  Also change permissions of the private key.
 ```
-openssl genrsa -out d:/tf/keys/oci_api_key.pem 204
+openssl genrsa -out d:/tf/keys/oci_api_key.pem 2048
 chmod go-rwx d:/tf/keys/oci_api_key.pem
 openssl rsa -pubout -in d:/tf/keys/oci_api_key.pem -out d:/tf/keys/oci_api_key_public.pem
 ```

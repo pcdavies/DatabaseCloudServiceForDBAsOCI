@@ -66,7 +66,7 @@ The following creates a new DBCS Enterprise instance with backup to cloud.  Use 
 
 	![](images/SG-setup-manual/009.png)
 
-### **STEP 3**: Generate SSH Key Pair on Windows Putty (see lower down to generate on Linux O/S).
+### **STEP 3**: Generate SSH Key Pair on Windows Putty
 
 -	When you create a DBCS instance (next step) you will be prompted for a public key.  This needs to be generated in advance.  Open Puttygen (available from the internet) and select generate a new key pair.
 
@@ -101,10 +101,6 @@ The following creates a new DBCS Enterprise instance with backup to cloud.  Use 
 -	Name the key `privateKey`.  Note this version will NOT have the .ppk suffix that the private key you saved above.
 
 	![](images/SG-setup-manual/016.3.png)
-
--	IF you are running a Linux OS use the following commands to generate a key pair.  This generates sshkey and sshkey.pub. Note you will need to rename these to privateKey and PublicKey to avoid confusion later in the labs.
-	- `ssh-keygen` (name it sshkey, hit enter to accept without a password)
-	- `chmod 600 sshkey` (change permissions of the private key)
 
 ### **STEP 4**: Create **WorkshopImage** Image (DBCS Instance)
 
