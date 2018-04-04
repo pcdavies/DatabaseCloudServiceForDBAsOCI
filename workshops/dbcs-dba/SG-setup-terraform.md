@@ -12,7 +12,7 @@ https://git-scm.com/download/win
 ```
 -	Clone the Terraform Repository.  We are cloning to d: (you can clone elsewhere).  Open a command window and enter the following.
 ```
-git clone https://oracle.github.io/learning-library/workshops/dbcs-dba-oci/
+git clone https://github.com/pcdavies/DatabaseCloudServiceForDBAsOCI.git
 ```
 ![](images/SG-setup-terraform/001.png)
 
