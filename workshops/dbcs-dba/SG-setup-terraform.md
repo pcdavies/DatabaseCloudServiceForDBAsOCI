@@ -123,7 +123,7 @@ openssl rsa -pubout -in d:/tf/keys/oci_api_key.pem -out d:/tf/keys/oci_api_key_p
 
 	![](images/SG-setup-terraform/031.png)
 
--	Select Tenancy and copy the tenancy_ocid.  Update the env-vars.bat file with this value (paste carefully between the double quotes).
+-	Select Tenancy and copy the tenancy_ocid.  Update the env-vars.bat file with this value (paste carefully between the double quotes).  
 
 	![](images/SG-setup-terraform/032.png)
 
@@ -145,21 +145,13 @@ openssl rsa -pubout -in d:/tf/keys/oci_api_key.pem -out d:/tf/keys/oci_api_key_p
 
 	![](images/SG-setup-terraform/038.png)
 
--	Next go to Storage - Object Storage.  
+-	Next go to Identity - Compartments.  
 
 	![](images/SG-setup-terraform/039.png)
 
--	Create a new bucket in the `Demo` compartment (see lower left for Compartment selection).  Call it `alpha`.  Accept the defaults.
+-	Select the `Demo` compartment and copy the OCID key.  Note customers may use a different compartment.
 
 	![](images/SG-setup-terraform/040.png)
-
-	![](images/SG-setup-terraform/041.png)
-
--	Select the `alpha` bucket, and then copy the compartment_ocid and paste it into the env-vars.bat file.
-
-	![](images/SG-setup-terraform/042.png)
-
-	![](images/SG-setup-terraform/043.png)
 
 -	Copy the Region value into the region varable in env-vars.bat.
 
