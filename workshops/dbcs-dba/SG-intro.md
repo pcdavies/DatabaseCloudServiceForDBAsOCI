@@ -52,7 +52,7 @@ Welcome to the Oracle Database Cloud Service Workshop. This particular version i
 -   Add a SSH Key.
 -   Recover a dropped table.
 
-## Lab 400:  CLI/Curl Commands (Programatic Control of Services)
+## Lab 400:  Oracle Command Line Interface (CLI)
 
 **Documentation**: [IL-400.md](IL-400.md)
 
