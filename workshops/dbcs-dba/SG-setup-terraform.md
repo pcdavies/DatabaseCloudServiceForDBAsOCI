@@ -2,7 +2,7 @@ Update April 2, 2018
 
 # Setup
 
-This workshop requires several setups steps that are normally done in advance as part of an automated process prior to running the labs.  In cases where a customer wishes to run through the workshop themselves on their own without the support of Global Services Engineering (GSE) they must first walk through the following steps.  Note there are two setup options: The first is manual, and the second (this one) uses Terraform with the Oracle Terraform OCI Provider.  This is the recommended set as it has fewer steps and configures the cloud automatically.  We have left the manual one in place so you can see what the Terraform process will do for you.  
+This workshop requires several setups steps that are normally done in advance as part of an automated process prior to running the labs.  In cases where a customer wishes to run through the workshop themselves on their own without the support of Global Services Engineering (GSE) they must first walk through the following steps.  Note there are two setup options: The first is manual, and the second (this one) uses Terraform with the Oracle Terraform OCI Provider.  This is the recommended set as it has fewer steps and configures the cloud automatically.  We have left the manual one in place so you can see what the Terraform process will do for you.  This workshop was built on and for version 12.2 of the database, but will also work with 18c with minor changes.  See the 18c_updates document in the drop down menu.  Ensure you make chnages noted in that document before you start the setup.
 
 ### **STEP 1**: Install Git, Download the Terraform Configuration Files, and Install Terraform and the Oracle Terraform OCI-Provider
 
@@ -158,6 +158,19 @@ openssl rsa -pubout -in d:/tf/keys/oci_api_key.pem -out d:/tf/keys/oci_api_key_p
 	![](images/SG-setup-terraform/044.png)
 
 ### **STEP 5**: Run Terraform.
+
+-	**OPTIONAL 18c Update:**  This workshop was created for Database 12.2.  IF you want to run this workshop on Database 18c you need to update the Terraform Configuration to specify this database version.  Go to your Terraform directory and open the variables.tf file.  Otherwise skip this step.
+	- Update `variables.tf`
+
+	![](images/SG-setup-terraform/056.png)
+
+	![](images/SG-setup-terraform/057.png)
+
+	-	Update `scripts\alpha\oci_alpha_install_as_oracle.sh` and `scripts\ws\oci_ws_install_as_oracle.sh`
+
+	![](images/SG-setup-terraform/058.png)
+
+	![](images/SG-setup-terraform/059.png)
 
 -	Open a command window in the Terraform directory and enter `env-vars.bat`.
 
