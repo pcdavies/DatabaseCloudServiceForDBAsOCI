@@ -2,7 +2,7 @@ Update April 2, 2018
 
 # Setup
 
-This workshop requires several setups steps that are normally done in advance as part of an automated process prior to running the labs.  In cases where a customer wishes to run through the workshop themselves on their own without the support of Global Services Engineering (GSE) they must first walk through the following steps.  Note there are two setup options: The first is manual, and the second (this one) uses Terraform with the Oracle Terraform OCI Provider.  This is the recommended set as it has fewer steps and configures the cloud automatically.  We have left the manual one in place so you can see what the Terraform process will do for you.  This workshop was built on and for version 12.2 of the database, but will also work with 18c with minor changes.  See the 18c_updates document in the drop down menu.  Ensure you make chnages noted in that document before you start the setup.
+This workshop requires several setups steps that are normally done in advance as part of an automated process prior to running the labs.  In cases where a customer wishes to run through the workshop themselves on their own without the support of Global Services Engineering (GSE) they must first walk through the following steps.  Note there are two setup options: The first is manual, and the second (this one) uses Terraform with the Oracle Terraform OCI Provider.  This is the recommended set as it has fewer steps and configures the cloud automatically.  We have left the manual one in place so you can see what the Terraform process will do for you.  This workshop was built on and for version 12.2 of the database, but will also work with 18c with minor changes.  The setup instructions and lab docs have notes at various places on what you need to do to run the workshop using 18c.
 
 ### **STEP 1**: Install Git, Download the Terraform Configuration Files, and Install Terraform and the Oracle Terraform OCI-Provider
 
@@ -96,7 +96,7 @@ openssl rsa -pubout -in d:/tf/keys/oci_api_key.pem -out d:/tf/keys/oci_api_key_p
 
 	![](images/SG-setup-terraform/025.png)
 
--	Update the path to your Terraform keys directory.  In this case we have created a tf directory in D.  You may have put your files in another directory.  Update the paths.
+-	Update your password.  We suggest you use your cloud password.
 
 	![](images/SG-setup-terraform/026.png)
 
@@ -123,13 +123,13 @@ openssl rsa -pubout -in d:/tf/keys/oci_api_key.pem -out d:/tf/keys/oci_api_key_p
 
 	![](images/SG-setup-terraform/031.png)
 
--	Select Tenancy and copy the tenancy_ocid.  Update the env-vars.bat file with this value (paste carefully between the double quotes).  
+-	Select Tenancy and copy the tenancy_ocid.  Update the env-vars.bat file with this value (paste carefully between the double quotes).
 
 	![](images/SG-setup-terraform/032.png)
 
 	![](images/SG-setup-terraform/033.png)
 
--	Next go to Identity - Users.  Copy the user_ocid and paste into the env-vars.bat file.
+-	Next go to Identity - Users.  Copy the user_ocid and paste into the env-vars.bat file.  Note if you are using a trial account the api_user will not exist.  In that case use the user_ocid of the trial account user.
 
 	![](images/SG-setup-terraform/034.png)
 
